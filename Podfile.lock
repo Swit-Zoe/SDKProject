@@ -1,0 +1,86 @@
+PODS:
+  - Alamofire (5.5.0)
+  - FlexLayout (1.3.23)
+  - Nantes (0.1.2)
+  - PinLayout (1.10.0)
+  - Realm (10.20.1):
+    - Realm/Headers (= 10.20.1)
+  - Realm/Headers (10.20.1)
+  - RealmSwift (10.20.1):
+    - Realm (= 10.20.1)
+  - ReusableKit (3.0.0):
+    - ReusableKit/Core (= 3.0.0)
+  - ReusableKit/Core (3.0.0)
+  - RichString (2.2.1)
+  - RxCocoa (6.2.0):
+    - RxRelay (= 6.2.0)
+    - RxSwift (= 6.2.0)
+  - RxFlow (2.12.4):
+    - RxCocoa (>= 6.0.0)
+    - RxSwift (>= 6.0.0)
+  - RxKeyboard (2.0.0):
+    - RxCocoa (~> 6.0)
+    - RxSwift (~> 6.0)
+  - RxRelay (6.2.0):
+    - RxSwift (= 6.2.0)
+  - RxSwift (6.2.0)
+  - SnapKit (5.0.1)
+  - SwiftyImage (1.6.0)
+  - TTTAttributedLabel (2.0.0)
+
+DEPENDENCIES:
+  - Alamofire
+  - FlexLayout
+  - Nantes
+  - PinLayout
+  - RealmSwift
+  - ReusableKit
+  - RichString
+  - RxCocoa
+  - RxFlow
+  - RxKeyboard
+  - RxSwift
+  - SnapKit
+  - SwiftyImage
+  - TTTAttributedLabel
+
+SPEC REPOS:
+  trunk:
+    - Alamofire
+    - FlexLayout
+    - Nantes
+    - PinLayout
+    - Realm
+    - RealmSwift
+    - ReusableKit
+    - RichString
+    - RxCocoa
+    - RxFlow
+    - RxKeyboard
+    - RxRelay
+    - RxSwift
+    - SnapKit
+    - SwiftyImage
+    - TTTAttributedLabel
+
+SPEC CHECKSUMS:
+  Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
+  FlexLayout: 5b44c0538e7eaa2110e3160dfdfb74611676fb91
+  Nantes: 0396442578e32242223fed46050dea1850236184
+  PinLayout: e50e9a748b632905fca6e67043ea4b05d6c92186
+  Realm: fac5ecd031fcb81171627b74944c885662d4b266
+  RealmSwift: 9b02d25acb46a14756bde9893abb99e2e3675923
+  ReusableKit: e5f853ad4652e411f96b6119b2488afa12929be6
+  RichString: 1f80e0025ea8ed2d864deb2beb73756da9600a97
+  RxCocoa: 4baf94bb35f2c0ab31bc0cb9f1900155f646ba42
+  RxFlow: 03a73c83fb8f183107074b40ab2544c668583f73
+  RxKeyboard: 4f5863f43b4ff0cbb2a20b94688d6b80c8a43c14
+  RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
+  RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
+  SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+  SwiftyImage: 65c71a147f417fc0fe137d17b135aaa666279a09
+  TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
+
+PODFILE CHECKSUM: e3420e856b668a108dce45a83baa3eac2d94748f
+
+COCOAPODS: 1.11.2
