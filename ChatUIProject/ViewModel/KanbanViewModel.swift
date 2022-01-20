@@ -14,7 +14,7 @@ class KanbanViewModel: NSObject {
     
     var onUpdated: () -> Void = {}
     
-    var statusModel: StatusModel = StatusModel() {
+    var statusModel: Status = Status() {
         didSet {
             onUpdated()
         }
@@ -32,19 +32,21 @@ class KanbanViewModel: NSObject {
     // MARK: - Functions
     
     func reload() {
-        taskListService.fetchStatusList { [weak self] model in
+        taskListService.fetchStatusColumnList { [weak self] status in
             guard let self = self else { return }
-            self.statusModel = model
+            self.statusModel = status
         }
     }
     
-    func makeTaskListViewController(statusIndex: Int) -> TaskListVC? {
-        if statusIndex > self.statusModel.status.count {
+    func makeTaskListViewController(statusIndex: Int = 0) -> TaskListVC? {
+        if statusIndex > self.statusModel.columns.count {
             return nil
         }
         
         let taskListViewController = TaskListVC()
         taskListViewController.taskListViewModel.statusIndex = statusIndex
+        taskListViewController.taskListViewModel.status = statusModel.columns[statusIndex]
+        taskListViewController.taskListViewModel.taskModel.columnByStatus = statusModel.tasks
         
         return taskListViewController
     }
@@ -62,9 +64,9 @@ extension KanbanViewModel: UIPageViewControllerDataSource {
         }
         
         var previousIndex = prevViewController.taskListViewModel.statusIndex
-        
+
         if previousIndex == 0 {
-            previousIndex = 2 //self.statusModel.status.count - 1
+            return nil
         } else {
             previousIndex -= 1
         }
@@ -80,8 +82,8 @@ extension KanbanViewModel: UIPageViewControllerDataSource {
         
         var nextIndex = nextViewController.taskListViewModel.statusIndex
         
-        if nextIndex == 2 { //self.statusModel.status.count - 1 {
-            nextIndex = 0
+        if nextIndex == self.statusModel.columns.count - 1 {
+            return nil
         } else {
             nextIndex += 1
         }
@@ -89,11 +91,11 @@ extension KanbanViewModel: UIPageViewControllerDataSource {
         return self.makeTaskListViewController(statusIndex: nextIndex)
     }
     
-    func presentationCount(for pageViewController: UIPageViewController) -> Int {
-        return 3 // self.statusModel.status.count
-    }
-    
-    func presentationIndex(for pageViewController: UIPageViewController) -> Int {
-        return 0
-    }
+//    func presentationCount(for pageViewController: UIPageViewController) -> Int {
+//        return self.statusModel.columns.count
+//    }
+//    
+//    func presentationIndex(for pageViewController: UIPageViewController) -> Int {
+//        return 0
+//    }
 }

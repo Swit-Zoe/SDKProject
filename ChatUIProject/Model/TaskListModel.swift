@@ -8,7 +8,6 @@
 import Foundation
 
 struct TaskListModel {
-    var status: [String] = []
-    
-    var taskByStatus: [String: [Task]] = [:]
+    var columnByStatus: [String: [String]] = [:]
+    var tasks: Tasks = [:]
 }

@@ -43,21 +43,12 @@ struct AssignTasks: Codable {
 struct Status: Codable {
     let columns: [String]
     let tasks: [String: [String]]
+    
+    init() {
+        self.columns = []
+        self.tasks = [:]
+    }
 }
-
-//// MARK: - StatusTasks
-//struct StatusTasks: Codable {
-//    let done: [String]
-//    let toDo, empty: [String]
-//    let doing: [String]
-//
-//    enum CodingKeys: String, CodingKey {
-//        case done = "Done"
-//        case toDo = "ToDo"
-//        case empty = ""
-//        case doing = "Doing"
-//    }
-//}
 
 // MARK: - Columns
 struct Columns: Codable {

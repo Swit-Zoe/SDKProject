@@ -229,9 +229,9 @@
 				EEA864FB2782BD0200EBA6A1 /* SubView */,
 				EEC4A10327788B2A00B0212B /* InChatVC.swift */,
 				EEE9D016278685DC00ACBC56 /* ChatListVC.swift */,
+				EEE9D018278685FA00ACBC56 /* ProjectListVC.swift */,
 				C853E8E62797CE1C00D89195 /* KanbanViewController.swift */,
 				EEE9D0142786803000ACBC56 /* TaskListVC.swift */,
-				EEE9D018278685FA00ACBC56 /* ProjectListVC.swift */,
 			);
 			path = ViewController;
 			sourceTree = "<group>";
