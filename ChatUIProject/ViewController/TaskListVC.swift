@@ -39,12 +39,13 @@ class TaskListVC: UIViewController {
 
     private func initKanbanTableView() {
         kanbanTableView.delegate = self
-        kanbanTableView.dataSource = self
+        kanbanTableView.dataSource = taskListViewModel
         kanbanTableView.separatorStyle = .none
                 
         kanbanTableView.register(TaskListTableViewCell.self,
                                  forCellReuseIdentifier: TaskListTableViewCell.reuseIdentifier)
         kanbanTableView.estimatedRowHeight = 10 // for automaticDemension
+        kanbanTableView.contentInsetAdjustmentBehavior = .always
         view.addSubview(kanbanTableView)
         
     }
@@ -52,7 +53,7 @@ class TaskListVC: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        kanbanTableView.pin.all(PEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
+        kanbanTableView.pin.all(PEdgeInsets(top: 10, left: 10, bottom: 0, right: 10))
     }
 
 }
@@ -66,27 +67,5 @@ extension TaskListVC: UITableViewDelegate {
         // WANRING: You must also set the UITableView.estimatedRowHeight for this to work.
         return UITableView.automaticDimension
     }
-    
-}
-
-// MARK: - UITableViewDataSource
-
-extension TaskListVC: UITableViewDataSource {
-    func tableView(_ tableView: UITableView,
-                   numberOfRowsInSection section: Int) -> Int {
-        return taskListViewModel.numberOfRowsInSection(statusIdx: 2)
-    }
-    
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskListTableViewCell.reuseIdentifier, for: indexPath) as? TaskListTableViewCell else {
-            return UITableViewCell()
-        }
-        cell.setCell(task: taskListViewModel.taskAtIndex(statusIdx: 2, index: indexPath.row))
-        
-        return cell
-    }
-    
-    
     
 }

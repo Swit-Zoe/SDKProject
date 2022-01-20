@@ -39,7 +39,7 @@ class KanbanViewController: UIViewController {
     }
     
     private func setInitialViewController() {
-        if let initialViewController = kanbanViewModel.makeTaskListViewController(statusIndex: 0),
+        if let initialViewController = kanbanViewModel.makeTaskListViewController(),
            let pageViewController = pageViewController {
             pageViewController.setViewControllers([initialViewController],
                                                   direction: .reverse,

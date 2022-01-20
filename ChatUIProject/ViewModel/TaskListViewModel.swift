@@ -9,10 +9,13 @@ import Foundation
 import UIKit
 
 class TaskListViewModel: NSObject {
+    
     var onUpdated: () -> Void = {}
     
     var statusIndex: Int = 0
-    var tasks: TaskListModel = TaskListModel() {
+    var status: String = ""
+    
+    var taskModel: TaskListModel = TaskListModel() {
         didSet {
             onUpdated()
         }
@@ -25,40 +28,27 @@ class TaskListViewModel: NSObject {
     }
     
     func reload() {
-        taskListService.fetchData { [weak self] model in
+        taskListService.fetchTaskList { [weak self] model in
             guard let self = self else { return }
-            self.tasks = model
+            self.taskModel.tasks = model
         }
     }
 }
 
-//extension TaskListViewModel: UITableViewDataSource {
-//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        <#code#>
-//    }
-//    
-//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-//        <#code#>
-//    }
-//}
-
-extension TaskListViewModel {
+extension TaskListViewModel: UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return taskModel.columnByStatus[status]?.count ?? 0
+    }
     
-    func numberOfRowsInSection(statusIdx: Int) -> Int {
-        if statusIdx > tasks.status.count { return 0 }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TaskListTableViewCell.reuseIdentifier,
+                                                       for: indexPath) as? TaskListTableViewCell else {
+            return UITableViewCell()
+        }
         
-        let status: String = tasks.status[statusIdx]
-        return tasks.taskByStatus[status]?.count ?? 0
-    }
-    
-    func taskAtIndex(statusIdx: Int, index: Int) -> Task {
-        let status: String = tasks.status[statusIdx]
-        return tasks.taskByStatus[status]![index]
-    }
-    
-    func cellForRowAt(statusIdx: Int, index: Int) -> UITableViewCell {
-        let cell = TaskListTableViewCell()
-        cell.setCell(task: taskAtIndex(statusIdx: statusIdx, index: index))
+        let logId = taskModel.columnByStatus[status]![indexPath.row]
+        
+        cell.setCell(task: taskModel.tasks[logId])
         
         return cell
     }

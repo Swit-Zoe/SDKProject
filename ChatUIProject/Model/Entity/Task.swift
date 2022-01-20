@@ -7,6 +7,8 @@
 
 import Foundation
 
+typealias Tasks = [String: Task]
+
 // MARK: - TaskData
 struct TaskData: Codable {
     let timestamp: String
@@ -14,7 +16,7 @@ struct TaskData: Codable {
     let message: String
     let version: Double
     let xsoc: Int? // 자료형 몰라서 Optional(Int)로 선언, 데이터 파일엔 null로 오고 있음
-    let data: [String: Task]
+    let data: Tasks
 }
 
 // MARK: - Datum

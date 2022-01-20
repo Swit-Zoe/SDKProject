@@ -64,7 +64,7 @@ class TaskListTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         colorLabelView.backgroundColor = .white
-        profileImageView.image = UIImage(named: "Zoe")
+        profileImageView.image = UIImage(named: "User1")
         dateLabel.flex.display(.flex)
         dateContainer.flex.isIncludedInLayout(true)
     }
@@ -149,12 +149,15 @@ class TaskListTableViewCell: UITableViewCell {
         taskTitleLabel.numberOfLines = 0
         taskTitleLabel.font = taskTitleLabel.font.withSize(16)
         
-        profileImageView.image = UIImage(named: "Zoe")
+        profileImageView.image = UIImage(named: "User1")
+        profileImageView.makeRounded(radius: Size.icon.height / 2)
         dateLabel.numberOfLines = 0
         dateLabel.font = dateLabel.font.withSize(12)
     }
     
-    func setCell(task: Task) {
+    func setCell(task: Task?) {
+        
+        guard let task: Task = task else { return }
         
         if task.logColor != "" {
             colorLabelView.backgroundColor = UIColor(hex: task.logColor)
