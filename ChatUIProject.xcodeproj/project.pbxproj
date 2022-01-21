@@ -25,8 +25,13 @@
 		C8FD50BF278D5AB00000E24B /* TaskListModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8FD50BE278D5AB00000E24B /* TaskListModel.swift */; };
 		D2F12B55C4FFA1A172C911E9 /* Pods_ChatUIProjectTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7FDD5FDE9D36309179E4BD17 /* Pods_ChatUIProjectTests.framework */; };
 		EE15E3AC2786C558009A3B62 /* ToolChainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE15E3AB2786C558009A3B62 /* ToolChainView.swift */; };
-		EE15E3AE2786DF91009A3B62 /* ChatModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE15E3AD2786DF91009A3B62 /* ChatModel.swift */; };
 		EE15E3B02786EA74009A3B62 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE15E3AF2786EA74009A3B62 /* ChatViewModel.swift */; };
+		EE7510732798F0EA00477EAE /* newschannel.json in Resources */ = {isa = PBXBuildFile; fileRef = EE7510722798F0EA00477EAE /* newschannel.json */; };
+		EE7510752798FDDC00477EAE /* ChatList.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7510742798FDDC00477EAE /* ChatList.swift */; };
+		EE7510792799522200477EAE /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE7510782799522200477EAE /* Date+Extension.swift */; };
+		EE75107B279A390E00477EAE /* ChatRichText.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE75107A279A390E00477EAE /* ChatRichText.swift */; };
+		EE75107E279A699100477EAE /* emoji.json in Resources */ = {isa = PBXBuildFile; fileRef = EE75107C279A699100477EAE /* emoji.json */; };
+		EE75107F279A699100477EAE /* emoji_sort.json in Resources */ = {isa = PBXBuildFile; fileRef = EE75107D279A699100477EAE /* emoji_sort.json */; };
 		EE80D7CB277949EC001D9762 /* TextViewExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE80D7CA277949EC001D9762 /* TextViewExtension.swift */; };
 		EE80D7CD27796947001D9762 /* ButtonExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE80D7CC27796947001D9762 /* ButtonExtension.swift */; };
 		EE856A0D277899E60043D306 /* ColorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE856A0C277899E60043D306 /* ColorExtension.swift */; };
@@ -93,8 +98,13 @@
 		C8FD50BE278D5AB00000E24B /* TaskListModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TaskListModel.swift; sourceTree = "<group>"; };
 		D86FE37FE30A16EB45F6A2BD /* Pods_ChatUIProject_ChatUIProjectUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ChatUIProject_ChatUIProjectUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE15E3AB2786C558009A3B62 /* ToolChainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToolChainView.swift; sourceTree = "<group>"; };
-		EE15E3AD2786DF91009A3B62 /* ChatModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatModel.swift; sourceTree = "<group>"; };
 		EE15E3AF2786EA74009A3B62 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
+		EE7510722798F0EA00477EAE /* newschannel.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = newschannel.json; sourceTree = "<group>"; };
+		EE7510742798FDDC00477EAE /* ChatList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatList.swift; sourceTree = "<group>"; };
+		EE7510782799522200477EAE /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
+		EE75107A279A390E00477EAE /* ChatRichText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRichText.swift; sourceTree = "<group>"; };
+		EE75107C279A699100477EAE /* emoji.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = emoji.json; sourceTree = "<group>"; };
+		EE75107D279A699100477EAE /* emoji_sort.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = emoji_sort.json; sourceTree = "<group>"; };
 		EE80D7CA277949EC001D9762 /* TextViewExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextViewExtension.swift; sourceTree = "<group>"; };
 		EE80D7CC27796947001D9762 /* ButtonExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ButtonExtension.swift; sourceTree = "<group>"; };
 		EE856A0C277899E60043D306 /* ColorExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorExtension.swift; sourceTree = "<group>"; };
@@ -202,6 +212,8 @@
 			children = (
 				C8315A0A2786E9F3005C0017 /* TaskList.swift */,
 				C8315A0C2786E9F7005C0017 /* Task.swift */,
+				EE7510742798FDDC00477EAE /* ChatList.swift */,
+				EE75107A279A390E00477EAE /* ChatRichText.swift */,
 			);
 			path = Entity;
 			sourceTree = "<group>";
@@ -218,6 +230,7 @@
 				EEE73062278E5EA900095744 /* Character+Extension.swift */,
 				EEE7306427900B6200095744 /* UIFont+Extension.swift */,
 				EE94CC7E27941B210027F354 /* URL+Extension.swift */,
+				EE7510782799522200477EAE /* Date+Extension.swift */,
 			);
 			path = extension;
 			sourceTree = "<group>";
@@ -263,7 +276,6 @@
 			children = (
 				C8FD50BD278D5A8B0000E24B /* Entity */,
 				EEA865022785791E00EBA6A1 /* MyInfo.swift */,
-				EE15E3AD2786DF91009A3B62 /* ChatModel.swift */,
 				C8FD50BE278D5AB00000E24B /* TaskListModel.swift */,
 				C853E8EA2797D1B400D89195 /* StatusModel.swift */,
 			);
@@ -306,7 +318,10 @@
 				C8315A052786B87C005C0017 /* Colors.xcassets */,
 				EEC4A10A27788B2B00B0212B /* LaunchScreen.storyboard */,
 				C8315A0E278D3C7E005C0017 /* column.json */,
+				EE7510722798F0EA00477EAE /* newschannel.json */,
 				C8315A0F278D3C7F005C0017 /* tasks.json */,
+				EE75107D279A699100477EAE /* emoji_sort.json */,
+				EE75107C279A699100477EAE /* emoji.json */,
 				EEC4A10D27788B2B00B0212B /* Info.plist */,
 			);
 			path = ChatUIProject;
@@ -421,6 +436,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE7510732798F0EA00477EAE /* newschannel.json in Resources */,
+				EE75107E279A699100477EAE /* emoji.json in Resources */,
+				EE75107F279A699100477EAE /* emoji_sort.json in Resources */,
 				C8315A062786B87C005C0017 /* Colors.xcassets in Resources */,
 				C8315A10278D3C7F005C0017 /* column.json in Resources */,
 				EEC4A10C27788B2B00B0212B /* LaunchScreen.storyboard in Resources */,
@@ -570,13 +588,15 @@
 				C853E8E92797CF7900D89195 /* KanbanViewModel.swift in Sources */,
 				C8315A012786B4BD005C0017 /* TaskListTableViewCell.swift in Sources */,
 				EEA865032785791E00EBA6A1 /* MyInfo.swift in Sources */,
+				EE7510752798FDDC00477EAE /* ChatList.swift in Sources */,
 				EE15E3B02786EA74009A3B62 /* ChatViewModel.swift in Sources */,
-				EE15E3AE2786DF91009A3B62 /* ChatModel.swift in Sources */,
+				EE75107B279A390E00477EAE /* ChatRichText.swift in Sources */,
 				EED621E32779FA350014571A /* MessageInputBar.swift in Sources */,
 				EE856A0F27789A080043D306 /* ChatCell.swift in Sources */,
 				C8FD50BF278D5AB00000E24B /* TaskListModel.swift in Sources */,
 				EEE9D01327867FCE00ACBC56 /* PageVC.swift in Sources */,
 				EEE9D0152786803000ACBC56 /* TaskListVC.swift in Sources */,
+				EE7510792799522200477EAE /* Date+Extension.swift in Sources */,
 				EE94CC7F27941B210027F354 /* URL+Extension.swift in Sources */,
 				EEC4A10027788B2A00B0212B /* AppDelegate.swift in Sources */,
 				EE80D7CB277949EC001D9762 /* TextViewExtension.swift in Sources */,

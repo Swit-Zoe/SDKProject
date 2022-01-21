@@ -27,6 +27,8 @@ class ChatCell: UITableViewCell {
         return imageView
     }()
     
+    fileprivate let imageDic = [true:UIImage(named: "User1"),false:UIImage(named: "User2")]
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         
@@ -34,9 +36,11 @@ class ChatCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        linkPreviewContainer.subviews.forEach{
-            $0.removeFromSuperview()
-        }
+//        linkPreviewContainer.subviews.forEach{
+//            $0.removeFromSuperview()
+//        }
+        profileImage.image = nil
+        
     }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -108,35 +112,43 @@ class ChatCell: UITableViewCell {
         timeLabel.textColor = UIColor.chatTimeColor
     }
     
-    func configure(_ ci:ChatInfo,_ delegate:UITextViewDelegate) {
-        nameLabel.text = ci.name
+    func configure(currentChat:Chat,presentChat:Chat?) {
+        nameLabel.text = currentChat.userName
         nameLabel.flex.markDirty()
         
-        timeLabel.text = ci.time
+        timeLabel.text = DateFormatter.commonDf.string(from: currentChat.created)
         timeLabel.flex.markDirty()
         
-        guard let content = ci.content else {
-            return
-        }
-        
-        chatLabel.attributedText = rtfToAttributedString(content)
+        chatLabel.attributedText = currentChat.bodyBlockskit.convertRichText()//currentChat.bodyText
+       // chatLabel.attributedText = rtfToAttributedString(content)
         chatLabel.flex.markDirty()
-        chatLabel.delegate = delegate
+        //chatLabel.delegate = delegate
         chatLabel.isEditable = false
         chatLabel.dataDetectorTypes = .link
-
-        if ci.same == true{
-            profileImage.image = nil
-            nameLabel.text = nil
-            timeLabel.text = nil
-            profileImage.flex.height(0)
-            profileImage.flex.markDirty()
-        }else{
-            profileImage.image = UIImage(named: ci.name!)
-            profileImage.flex.height(48)
-            profileImage.flex.markDirty()
+        
+        profileImage.image = imageDic[true]!
+        
+        
+        
+        if let pc = presentChat{
+            if pc.userID == currentChat.userID &&
+                DateFormatter.commonDf.string(from: currentChat.created) == DateFormatter.commonDf.string(from: pc.created)
+            {
+                profileImage.image = nil
+                nameLabel.text = nil
+                timeLabel.text = nil
+                profileImage.flex.height(0)
+                profileImage.flex.markDirty()
+            }else{
+                profileImage.image = imageDic[true]!
+                profileImage.flex.height(48)
+                profileImage.flex.markDirty()
+            }
         }
     }
+
+    
+ 
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -157,9 +169,10 @@ class ChatCell: UITableViewCell {
     
     fileprivate func rtfToAttributedString(_ html:String) -> NSAttributedString? {
       guard let data = html.data(using: .utf8) else {
+          
         return NSAttributedString()
       }
-        
+        print(html)
       do {
         return try NSAttributedString(data: data, options: [.documentType: NSAttributedString.DocumentType.rtf, .characterEncoding:String.Encoding.utf8.rawValue], documentAttributes: nil)
       } catch {

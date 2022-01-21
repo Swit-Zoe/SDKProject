@@ -20,6 +20,7 @@ target 'ChatUIProject' do
   pod 'TTTAttributedLabel'
   pod 'Nantes'
   pod 'Alamofire'
+  pod 'Differ'
 
   target 'ChatUIProjectTests' do
     inherit! :search_paths

@@ -17,6 +17,7 @@ import SwiftUI
 import Nantes
 import TTTAttributedLabel
 import LinkPresentation
+import Differ
 
 class InChatVC: UIViewController {
 
@@ -34,11 +35,15 @@ class InChatVC: UIViewController {
     let realm = try! Realm()
     var chatViewModel = ChatViewModel()
     var previewLoaded:[Bool] = [Bool]()
+    
+    var chatList:ChatList?
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Chat Control"
+        
+        chatList = decodeJson(type: ChatList.self, path: "newschannel")
         
         setToolChainView()
         setMessageInputBar()
@@ -46,6 +51,52 @@ class InChatVC: UIViewController {
         setKeyboardNotification()
         
         render()
+        
+        
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
+            if self.chatList!.data.count > 1{
+                let oldValue = self.chatList!.data
+                
+                self.chatList!.data.removeFirst()
+                
+                self.tableView.animateRowChanges(
+                    oldData: oldValue,
+                    newData: self.chatList!.data,
+                    deletionAnimation: .middle,
+                    insertionAnimation: .middle)
+               // self.tableView.scrollToRow(at: IndexPath(row: self.chatList!.data.count - 1, section: 0), at: .bottom, animated: true)
+            }
+            
+            
+        }
+        
+        tableView.reloadData()
+    }
+    
+    //MARK: decode json file
+    private func decodeJson<T: Decodable>(type: T.Type, path: String) -> T?{
+        let decoder = JSONDecoder()
+        let df = DateFormatter()
+        df.locale = Locale(identifier: Locale.preferredLanguages[0])
+        df.calendar = Calendar(identifier: .iso8601)
+        
+        decoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
+            let container = try decoder.singleValueContainer()
+            let dateStr = try container.decode(String.self)
+
+            df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+            guard let date = df.date(from: dateStr) else{
+                return Date()
+            }
+            return date
+        })
+        
+        guard let fileURL = Bundle.main.url(forResource: path, withExtension: "json") else { return nil}
+        guard let data = try? Data(contentsOf: fileURL) else { return nil}
+        
+        guard let result = try? decoder.decode(type.self, from: data) else {return nil}
+        
+        return result
     }
     
     // MARK: Keyboard Noti Setting
@@ -158,15 +209,15 @@ class InChatVC: UIViewController {
     // MARK: SendMessage
     @objc func sendMessage() {
         
-        let chatModel = ChatModel()
-        chatModel.name = chatViewModel.ns[Int.random(in: 0..<5)]
-        chatModel.time = Date()
-        chatModel.content = messageInputBar.textView.attributedText.attributedStringToRtf
-        print(chatModel.content!)
-        
-        realm.beginWrite()
-        realm.add(chatModel)
-        try! realm.commitWrite()
+//        let chatModel = ChatModel()
+//        chatModel.name = chatViewModel.ns[Int.random(in: 0..<5)]
+//        chatModel.time = Date()
+//        chatModel.content = messageInputBar.textView.attributedText.attributedStringToRtf
+//        print(chatModel.content!)
+//
+//        realm.beginWrite()
+//        realm.add(chatModel)
+//        try! realm.commitWrite()
         
         messageInputBar.textView.text = nil
         messageInputBar.textView.attributedText = nil
@@ -177,12 +228,12 @@ class InChatVC: UIViewController {
             $0.height.equalTo(MessageInputBar.Size.minHeight)
         }
         
-        chatViewModel.add(chatModel:chatModel)
+ //       chatViewModel.add(chatModel:chatModel)
         tableView.reloadData()
         
-        print(chatViewModel.CI!.count)
+   //     print(chatViewModel.CI!.count)
         
-        tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
+   //     tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
     }
     // MARK: toolChainFontSet
     @objc func toolChainFontViewSet() {
@@ -276,18 +327,18 @@ class InChatVC: UIViewController {
     
     func render(){
         
-        let chatModels = realm.objects(ChatModel.self)
-        
-        for cm in chatModels{
-            chatViewModel.add(chatModel: cm)
-        }
-        
-        
-        tableView.reloadData()
-        
-        if chatViewModel.CI!.count > 0 {
-            tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
-        }
+//        let chatModels = realm.objects(ChatModel.self)
+//
+//        for cm in chatModels{
+//            chatViewModel.add(chatModel: cm)
+//        }
+//
+//
+//        tableView.reloadData()
+//
+//        if chatViewModel.CI!.count > 0 {
+//            tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
+//        }
     }
     
     // MARK: Alert Control
@@ -345,18 +396,21 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier, for: indexPath) as! ChatCell
         
         //cell.prepareForReuse()
-        cell.configure(chatViewModel.CI![indexPath.row],self)
-        cell.chatLabel.detectLink{
-            cell.linkPreviewContainer.flex.addItem($0)
-            cell.linkPreviewContainer.flex.markDirty()
-           // self.tableView.reloadData()
-            print("asdf")
-        }
+        let idx = indexPath.row
+        let pc = idx > 0 ? chatList!.data[idx - 1]:nil
+        cell.configure(currentChat: chatList!.data[idx], presentChat: pc)
+        
+//        cell.chatLabel.detectLink{
+//            cell.linkPreviewContainer.flex.addItem($0)
+//            cell.linkPreviewContainer.flex.markDirty()
+//           // self.tableView.reloadData()
+//            print("asdf")
+//        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        chatViewModel.CI!.count
+        chatList!.data.count
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
