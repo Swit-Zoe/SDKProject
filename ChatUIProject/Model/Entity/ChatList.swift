@@ -4,7 +4,7 @@
 //   let welcome = try? newJSONDecoder().decode(Welcome.self, from: jsonData)
 
 import Foundation
-
+import DifferenceKit
 // MARK: - Welcome
 struct ChatList: Equatable,Codable {
     static func == (lhs: ChatList, rhs: ChatList) -> Bool {
@@ -19,10 +19,18 @@ struct ChatList: Equatable,Codable {
 }
 
 // MARK: - Datum
-struct Chat: Equatable,Codable {
+struct Chat: Differentiable,Equatable,Codable {
+    
+    var differenceIdentifier: Date {
+           return created
+       }
+
+   func isContentEqual(to source: Chat) -> Bool {
+       return (created == source.created && modified == source.modified) ? true : false
+   }
     
     static func == (lhs: Chat, rhs: Chat) -> Bool {
-        return lhs.created == rhs.created ? true : false
+        return (lhs.created == rhs.created && lhs.modified == rhs.modified) ? true : false
     }
     
     let created: Date
@@ -34,7 +42,7 @@ struct Chat: Equatable,Codable {
     let isOutcome: Bool
     let pinID: String
     let originMsgID: MsgID
-    let modified: Modified
+    let modified: Date
     let msgCmtCnt: Int
     let contID, bodyBlockskit: String
     let chatType: ChatType

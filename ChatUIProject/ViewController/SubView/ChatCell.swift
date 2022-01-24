@@ -7,12 +7,9 @@ import Nantes
 
 class ChatCell: UITableViewCell {
     static let reuseIdentifier = "ChatCellView"
-    
     fileprivate let padding: CGFloat = 10
-    
     fileprivate let nameLabel = UILabel()
 //    fileprivate let chatLabel2 : NantesLabel = .init(frame: .zero)
-    
     let chatLabel = UITextView()
     
     fileprivate let timeLabel = UILabel()
@@ -27,7 +24,7 @@ class ChatCell: UITableViewCell {
         return imageView
     }()
     
-    fileprivate let imageDic = [true:UIImage(named: "User1"),false:UIImage(named: "User2")]
+    fileprivate let imageDic = [true:UIImage(named: "profile"),false:UIImage(named: "profile")]
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -112,14 +109,14 @@ class ChatCell: UITableViewCell {
         timeLabel.textColor = UIColor.chatTimeColor
     }
     
-    func configure(currentChat:Chat,presentChat:Chat?) {
+    func configure(currentChat:ViewModel,presentChat:ViewModel?) {
         nameLabel.text = currentChat.userName
         nameLabel.flex.markDirty()
         
-        timeLabel.text = DateFormatter.commonDf.string(from: currentChat.created)
+        timeLabel.text = currentChat.created
         timeLabel.flex.markDirty()
         
-        chatLabel.attributedText = currentChat.bodyBlockskit.convertRichText()//currentChat.bodyText
+        chatLabel.attributedText = currentChat.text
        // chatLabel.attributedText = rtfToAttributedString(content)
         chatLabel.flex.markDirty()
         //chatLabel.delegate = delegate
@@ -129,10 +126,9 @@ class ChatCell: UITableViewCell {
         profileImage.image = imageDic[true]!
         
         
-        
         if let pc = presentChat{
-            if pc.userID == currentChat.userID &&
-                DateFormatter.commonDf.string(from: currentChat.created) == DateFormatter.commonDf.string(from: pc.created)
+            if pc.userId == currentChat.userId &&
+                currentChat.created == pc.created
             {
                 profileImage.image = nil
                 nameLabel.text = nil

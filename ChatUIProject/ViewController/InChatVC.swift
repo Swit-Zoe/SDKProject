@@ -18,6 +18,7 @@ import Nantes
 import TTTAttributedLabel
 import LinkPresentation
 import Differ
+import DifferenceKit
 
 class InChatVC: UIViewController {
 
@@ -32,19 +33,15 @@ class InChatVC: UIViewController {
     
     var keyboardH:CGFloat = 0
     let disposeBag = DisposeBag()
-    let realm = try! Realm()
-    var chatViewModel = ChatViewModel()
-    var previewLoaded:[Bool] = [Bool]()
-    
-    var chatList:ChatList?
+  //  let realm = try! Realm()
+    var chatViewModelService = ChatViewModelService()
+    var viewModel = [ViewModel]()
 
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Chat Control"
-        
-        chatList = decodeJson(type: ChatList.self, path: "newschannel")
-        
+
         setToolChainView()
         setMessageInputBar()
         setTableView()
@@ -52,53 +49,33 @@ class InChatVC: UIViewController {
         
         render()
         
-        
-        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            if self.chatList!.data.count > 1{
-                let oldValue = self.chatList!.data
-                
-                self.chatList!.data.removeFirst()
-                
-                self.tableView.animateRowChanges(
-                    oldData: oldValue,
-                    newData: self.chatList!.data,
-                    deletionAnimation: .middle,
-                    insertionAnimation: .middle)
-               // self.tableView.scrollToRow(at: IndexPath(row: self.chatList!.data.count - 1, section: 0), at: .bottom, animated: true)
-            }
-            
-            
-        }
-        
-        tableView.reloadData()
-    }
-    
-    //MARK: decode json file
-    private func decodeJson<T: Decodable>(type: T.Type, path: String) -> T?{
-        let decoder = JSONDecoder()
-        let df = DateFormatter()
-        df.locale = Locale(identifier: Locale.preferredLanguages[0])
-        df.calendar = Calendar(identifier: .iso8601)
-        
-        decoder.dateDecodingStrategy = .custom({ (decoder) -> Date in
-            let container = try decoder.singleValueContainer()
-            let dateStr = try container.decode(String.self)
+        chatViewModelService.chatViewModel.observe(on:
+                                                        /*MainScheduler.instance*/
+                                                      ConcurrentDispatchQueueScheduler(qos: .default))
+            .scan([ViewModel]()) {[weak self] in
+                guard let self = self else {return $1}
+//                self.tableView.animateRowChanges(
+//                    oldData: oldValue,
+//                    newData: self.chatList!.data,
+//                    deletionAnimation: .middle,
+//                    insertionAnimation: .middle)
 
-            df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-            guard let date = df.date(from: dateStr) else{
-                return Date()
-            }
-            return date
-        })
-        
-        guard let fileURL = Bundle.main.url(forResource: path, withExtension: "json") else { return nil}
-        guard let data = try? Data(contentsOf: fileURL) else { return nil}
-        
-        guard let result = try? decoder.decode(type.self, from: data) else {return nil}
-        
-        return result
+                let changeset = StagedChangeset(source: $0, target: $1)
+
+                DispatchQueue.main.async {
+                    self.tableView.reload(using: changeset, with: .right) { data in
+                        self.viewModel = data
+                    }
+                }
+                  return $1
+               }
+            .subscribe(onNext:{element in
+            }).disposed(by: disposeBag)
+        chatViewModelService.fetchRepo()
+
+      //  tableView.reloadData()
     }
-    
+
     // MARK: Keyboard Noti Setting
     private func setKeyboardNotification(){
         
@@ -108,7 +85,7 @@ class InChatVC: UIViewController {
         
         RxKeyboard.instance.visibleHeight
             .drive(onNext: { [weak self] keyboardVisibleHeight in
-                print(keyboardVisibleHeight)
+                print("keyboard : \(keyboardVisibleHeight)")
                 guard let `self` = self else { return }
                 self.toolChainView.snp.updateConstraints {
                     if self.keyboardH >= keyboardVisibleHeight{
@@ -397,8 +374,8 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         
         //cell.prepareForReuse()
         let idx = indexPath.row
-        let pc = idx > 0 ? chatList!.data[idx - 1]:nil
-        cell.configure(currentChat: chatList!.data[idx], presentChat: pc)
+        let pc = idx > 0 ? viewModel[idx - 1]:nil
+        cell.configure(currentChat: viewModel[idx], presentChat: pc)
         
 //        cell.chatLabel.detectLink{
 //            cell.linkPreviewContainer.flex.addItem($0)
@@ -410,7 +387,7 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        chatList!.data.count
+        viewModel.count
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
