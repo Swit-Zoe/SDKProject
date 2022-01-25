@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import RichString
 
 extension String {
     static var space = " ".fontSize(16)
@@ -16,4 +18,5 @@ extension String {
     var emojiString: String { emojis.map { String($0) }.reduce("", +) }
     var emojis: [Character] { filter { $0.isEmoji } }
     var emojiScalars: [UnicodeScalar] { filter { $0.isEmoji }.flatMap { $0.unicodeScalars } }
+    var decodingUnicodeCharacters: String { applyingTransform(.init("Hex-Any"), reverse: false) ?? "" }
 }

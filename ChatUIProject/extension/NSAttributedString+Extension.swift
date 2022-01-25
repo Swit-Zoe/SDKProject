@@ -17,5 +17,6 @@ extension NSAttributedString {
             return nil
         }
     }
+    static var empty = NSAttributedString(string:"").fontSize(16)
     
 }

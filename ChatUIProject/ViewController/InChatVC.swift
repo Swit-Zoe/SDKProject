@@ -17,6 +17,8 @@ import SwiftUI
 import Nantes
 import TTTAttributedLabel
 import LinkPresentation
+import Differ
+import DifferenceKit
 
 class InChatVC: UIViewController {
 
@@ -31,23 +33,53 @@ class InChatVC: UIViewController {
     
     var keyboardH:CGFloat = 0
     let disposeBag = DisposeBag()
-    let realm = try! Realm()
-    var chatViewModel = ChatViewModel()
-    var previewLoaded:[Bool] = [Bool]()
+  //  let realm = try! Realm()
+    var chatViewModelService = ChatViewModelService()
+    var viewModel = [ViewModel]()
 
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Chat Control"
-        
+
         setToolChainView()
         setMessageInputBar()
         setTableView()
         setKeyboardNotification()
         
         render()
+        initKeyCommands()
+        
+        chatViewModelService.chatViewModel.observe(on:
+                                                        /*MainScheduler.instance*/
+                                                      ConcurrentDispatchQueueScheduler(qos: .default))
+            .scan([ViewModel]()) {[weak self] in
+                guard let self = self else {return $1}
+//                self.tableView.animateRowChanges(
+//                    oldData: oldValue,
+//                    newData: self.chatList!.data,
+//                    deletionAnimation: .middle,
+//                    insertionAnimation: .middle)
+
+                let changeset = StagedChangeset(source: $0, target: $1)
+
+                DispatchQueue.main.async {
+                    self.tableView.reload(using: changeset, with: .right) { data in
+                        self.viewModel = data
+                    }
+                }
+                  return $1
+               }
+            .subscribe(onNext:{element in
+            }).disposed(by: disposeBag)
+        chatViewModelService.fetchRepo()
+
+      //  tableView.reloadData()
     }
-    
+
     // MARK: Keyboard Noti Setting
     private func setKeyboardNotification(){
         
@@ -57,7 +89,7 @@ class InChatVC: UIViewController {
         
         RxKeyboard.instance.visibleHeight
             .drive(onNext: { [weak self] keyboardVisibleHeight in
-                print(keyboardVisibleHeight)
+                print("keyboard : \(keyboardVisibleHeight)")
                 guard let `self` = self else { return }
                 self.toolChainView.snp.updateConstraints {
                     if self.keyboardH >= keyboardVisibleHeight{
@@ -153,20 +185,25 @@ class InChatVC: UIViewController {
         }
         messageInputBar.sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
     }
-    
+    // MARK: add Key Commands
+    private func initKeyCommands() {
+        KeyCommands.allCases.forEach { keyCommand in
+            addKeyCommand(keyCommand.command)
+        }
+    }
     
     // MARK: SendMessage
     @objc func sendMessage() {
         
-        let chatModel = ChatModel()
-        chatModel.name = chatViewModel.ns[Int.random(in: 0..<5)]
-        chatModel.time = Date()
-        chatModel.content = messageInputBar.textView.attributedText.attributedStringToRtf
-        print(chatModel.content!)
-        
-        realm.beginWrite()
-        realm.add(chatModel)
-        try! realm.commitWrite()
+//        let chatModel = ChatModel()
+//        chatModel.name = chatViewModel.ns[Int.random(in: 0..<5)]
+//        chatModel.time = Date()
+//        chatModel.content = messageInputBar.textView.attributedText.attributedStringToRtf
+//        print(chatModel.content!)
+//
+//        realm.beginWrite()
+//        realm.add(chatModel)
+//        try! realm.commitWrite()
         
         messageInputBar.textView.text = nil
         messageInputBar.textView.attributedText = nil
@@ -177,12 +214,12 @@ class InChatVC: UIViewController {
             $0.height.equalTo(MessageInputBar.Size.minHeight)
         }
         
-        chatViewModel.add(chatModel:chatModel)
+ //       chatViewModel.add(chatModel:chatModel)
         tableView.reloadData()
         
-        print(chatViewModel.CI!.count)
+   //     print(chatViewModel.CI!.count)
         
-        tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
+   //     tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
     }
     // MARK: toolChainFontSet
     @objc func toolChainFontViewSet() {
@@ -276,18 +313,18 @@ class InChatVC: UIViewController {
     
     func render(){
         
-        let chatModels = realm.objects(ChatModel.self)
-        
-        for cm in chatModels{
-            chatViewModel.add(chatModel: cm)
-        }
-        
-        
-        tableView.reloadData()
-        
-        if chatViewModel.CI!.count > 0 {
-            tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
-        }
+//        let chatModels = realm.objects(ChatModel.self)
+//
+//        for cm in chatModels{
+//            chatViewModel.add(chatModel: cm)
+//        }
+//
+//
+//        tableView.reloadData()
+//
+//        if chatViewModel.CI!.count > 0 {
+//            tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
+//        }
     }
     
     // MARK: Alert Control
@@ -345,18 +382,21 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier, for: indexPath) as! ChatCell
         
         //cell.prepareForReuse()
-        cell.configure(chatViewModel.CI![indexPath.row],self)
-        cell.chatLabel.detectLink{
-            cell.linkPreviewContainer.flex.addItem($0)
-            cell.linkPreviewContainer.flex.markDirty()
-           // self.tableView.reloadData()
-            print("asdf")
-        }
+        let idx = indexPath.row
+       // let pc = idx > 0 ? viewModel[idx - 1]:nil
+        cell.configure(viewModel: viewModel[idx])
+        
+//        cell.chatLabel.detectLink{
+//            cell.linkPreviewContainer.flex.addItem($0)
+//            cell.linkPreviewContainer.flex.markDirty()
+//           // self.tableView.reloadData()
+//            print("asdf")
+//        }
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        chatViewModel.CI!.count
+        viewModel.count
     }
     func numberOfSections(in tableView: UITableView) -> Int {
         return 1
@@ -500,4 +540,19 @@ extension InChatVC:TTTAttributedLabelDelegate{
     func attributedLabel(_ label: TTTAttributedLabel!, didSelectLinkWith url: URL!) {
         print("Tapped link: \(url)")
     }
+}
+
+// MARK: - KeyCommandActionProtocol
+
+extension InChatVC: KeyCommandActionProtocol {
+    func pressEnter() {
+        sendMessage()
+        print("Enter Pressed")
+    }
+    
+    func pressNewLine() {
+        //textView.insertText("\n")
+        print("New Line")
+    }
+    func dummy(){}
 }
