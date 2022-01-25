@@ -21,7 +21,7 @@ import Differ
 import DifferenceKit
 
 class InChatVC: UIViewController {
-
+    
     
     
     // MARK: View
@@ -33,10 +33,10 @@ class InChatVC: UIViewController {
     
     var keyboardH:CGFloat = 0
     let disposeBag = DisposeBag()
-  //  let realm = try! Realm()
+    //  let realm = try! Realm()
     var chatViewModelService = ChatViewModelService()
     var viewModel = [ViewModel]()
-
+    
     override var canBecomeFirstResponder: Bool {
         return true
     }
@@ -44,7 +44,7 @@ class InChatVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Chat Control"
-
+        
         setToolChainView()
         setMessageInputBar()
         setTableView()
@@ -54,32 +54,36 @@ class InChatVC: UIViewController {
         initKeyCommands()
         
         chatViewModelService.chatViewModel.observe(on:
-                                                        /*MainScheduler.instance*/
-                                                      ConcurrentDispatchQueueScheduler(qos: .default))
+                                                    /*MainScheduler.instance*/
+                                                   ConcurrentDispatchQueueScheduler(qos: .default))
             .scan([ViewModel]()) {[weak self] in
                 guard let self = self else {return $1}
-//                self.tableView.animateRowChanges(
-//                    oldData: oldValue,
-//                    newData: self.chatList!.data,
-//                    deletionAnimation: .middle,
-//                    insertionAnimation: .middle)
-
+                //                self.tableView.animateRowChanges(
+                //                    oldData: oldValue,
+                //                    newData: self.chatList!.data,
+                //                    deletionAnimation: .middle,
+                //                    insertionAnimation: .middle)
+                
                 let changeset = StagedChangeset(source: $0, target: $1)
-
+                
                 DispatchQueue.main.async {
                     self.tableView.reload(using: changeset, with: .right) { data in
                         self.viewModel = data
                     }
                 }
-                  return $1
-               }
+                return $1
+            }
             .subscribe(onNext:{element in
             }).disposed(by: disposeBag)
         chatViewModelService.fetchRepo()
-
-      //  tableView.reloadData()
+                
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.5){
+            self.tableView.scrollToRow(
+                at: IndexPath(row: self.viewModel.count - 1, section: 0),
+                at: .bottom, animated: true)
+        }
     }
-
+    
     // MARK: Keyboard Noti Setting
     private func setKeyboardNotification(){
         
@@ -195,15 +199,15 @@ class InChatVC: UIViewController {
     // MARK: SendMessage
     @objc func sendMessage() {
         
-//        let chatModel = ChatModel()
-//        chatModel.name = chatViewModel.ns[Int.random(in: 0..<5)]
-//        chatModel.time = Date()
-//        chatModel.content = messageInputBar.textView.attributedText.attributedStringToRtf
-//        print(chatModel.content!)
-//
-//        realm.beginWrite()
-//        realm.add(chatModel)
-//        try! realm.commitWrite()
+        //        let chatModel = ChatModel()
+        //        chatModel.name = chatViewModel.ns[Int.random(in: 0..<5)]
+        //        chatModel.time = Date()
+        //        chatModel.content = messageInputBar.textView.attributedText.attributedStringToRtf
+        //        print(chatModel.content!)
+        //
+        //        realm.beginWrite()
+        //        realm.add(chatModel)
+        //        try! realm.commitWrite()
         
         messageInputBar.textView.text = nil
         messageInputBar.textView.attributedText = nil
@@ -214,12 +218,12 @@ class InChatVC: UIViewController {
             $0.height.equalTo(MessageInputBar.Size.minHeight)
         }
         
- //       chatViewModel.add(chatModel:chatModel)
+        //       chatViewModel.add(chatModel:chatModel)
         tableView.reloadData()
         
-   //     print(chatViewModel.CI!.count)
+        //     print(chatViewModel.CI!.count)
         
-   //     tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
+        //     tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
     }
     // MARK: toolChainFontSet
     @objc func toolChainFontViewSet() {
@@ -240,7 +244,7 @@ class InChatVC: UIViewController {
             sender.backgroundColor = .systemGray5
             linkAlert()
         }
-       
+        
         if selected{
             switch(sender){
             case toolChainView.boldButton:
@@ -284,7 +288,7 @@ class InChatVC: UIViewController {
                 break
             }
         }
-      
+        
         
         setSelectedCursorFont(messageInputBar.textView)
     }
@@ -303,7 +307,7 @@ class InChatVC: UIViewController {
                 .obliqueness(toolChainView.fontType.italic)
                 .strikeThrough(style: .single)
                 .strikeThrough(color: toolChainView.fontType.line)
-     
+            
             attM.replaceCharacters(in: range, with: s1)
             textView.attributedText = attM
             textView.selectedRange = range
@@ -313,18 +317,18 @@ class InChatVC: UIViewController {
     
     func render(){
         
-//        let chatModels = realm.objects(ChatModel.self)
-//
-//        for cm in chatModels{
-//            chatViewModel.add(chatModel: cm)
-//        }
-//
-//
-//        tableView.reloadData()
-//
-//        if chatViewModel.CI!.count > 0 {
-//            tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
-//        }
+        //        let chatModels = realm.objects(ChatModel.self)
+        //
+        //        for cm in chatModels{
+        //            chatViewModel.add(chatModel: cm)
+        //        }
+        //
+        //
+        //        tableView.reloadData()
+        //
+        //        if chatViewModel.CI!.count > 0 {
+        //            tableView.scrollToRow(at: IndexPath(row: chatViewModel.CI!.count - 1, section: 0), at: .bottom, animated: true)
+        //        }
     }
     
     // MARK: Alert Control
@@ -355,7 +359,7 @@ class InChatVC: UIViewController {
             guard let url = NSURL(string:urlString) else{
                 return
             }
-
+            
             guard let linkString = controller.textFields?[0].text?.link(url: url).fontSize(16).underline(style: .single).underline(color: .linkColor) else {return}
             let attM = NSMutableAttributedString(attributedString: self.messageInputBar.textView.attributedText)
             attM.insert(linkString, at: self.messageInputBar.textView.selectedRange.lowerBound)
@@ -383,15 +387,15 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         
         //cell.prepareForReuse()
         let idx = indexPath.row
-       // let pc = idx > 0 ? viewModel[idx - 1]:nil
+        // let pc = idx > 0 ? viewModel[idx - 1]:nil
         cell.configure(viewModel: viewModel[idx])
         
-//        cell.chatLabel.detectLink{
-//            cell.linkPreviewContainer.flex.addItem($0)
-//            cell.linkPreviewContainer.flex.markDirty()
-//           // self.tableView.reloadData()
-//            print("asdf")
-//        }
+        //        cell.chatLabel.detectLink{
+        //            cell.linkPreviewContainer.flex.addItem($0)
+        //            cell.linkPreviewContainer.flex.markDirty()
+        //           // self.tableView.reloadData()
+        //            print("asdf")
+        //        }
         return cell
     }
     
@@ -419,22 +423,22 @@ extension InChatVC:UITextViewDelegate{
     }
     
     func textViewDidChangeSelection(_ textView: UITextView) {
-
+        
     }
     
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text.isSingleEmoji{
-
+            
         }else{
             let attM = NSMutableAttributedString(attributedString: textView.attributedText)
-
-         
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.01){
-                    attM.replaceCharacters(in: range, with: self.setFont(text))
-                    textView.attributedText = attM
-                    textView.selectedRange = NSRange(location: range.lowerBound + text.count, length: 0)
-
-                }
+            
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.01){
+                attM.replaceCharacters(in: range, with: self.setFont(text))
+                textView.attributedText = attM
+                textView.selectedRange = NSRange(location: range.lowerBound + text.count, length: 0)
+                
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
                 self.messageInputBar.previousLength = self.messageInputBar.textView.text.count
             }
@@ -462,7 +466,7 @@ extension InChatVC:UITextViewDelegate{
         let range = textView.textRange(from: start!, to: end!)
         return range!
     }
-
+    
     
     func textViewDidChange(_ textView: UITextView) {
         var height = MessageInputBar.Size.minHeight
@@ -490,9 +494,9 @@ extension InChatVC:UITextViewDelegate{
         messageInputBar.sendButton.isEnabled = !textView.text.isEmpty
         
         if textView.text.count > MessageInputBar.Size.maxLength{
-//            let startIdx = textView.text.startIndex
-//            let endIdx = textView.text.index(startIdx, offsetBy: MessageInputBar.Size.maxLength)
-//            textView.text = String(textView.text[startIdx..<endIdx])
+            //            let startIdx = textView.text.startIndex
+            //            let endIdx = textView.text.index(startIdx, offsetBy: MessageInputBar.Size.maxLength)
+            //            textView.text = String(textView.text[startIdx..<endIdx])
             
             //self.showTooLongAlert()
             messageInputBar.sendButton.isEnabled = false

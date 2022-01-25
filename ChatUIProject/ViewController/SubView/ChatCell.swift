@@ -19,8 +19,6 @@ class ChatCell: UITableViewCell {
     fileprivate let reactionContainer = UIView()
     fileprivate let commentContainer = UIView()
     fileprivate let dayChangeView = UIView()
-    fileprivate let line = UIView()
-    fileprivate let line2 = UIView()
     fileprivate let dayChangeLabel : UILabel = {
         let label = UILabel()
         label.textColor = .lightGray
@@ -85,6 +83,7 @@ class ChatCell: UITableViewCell {
         timeLabel.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         
         setColor()
+        
         setFlex()
         layout()
     }
@@ -101,6 +100,9 @@ class ChatCell: UITableViewCell {
     }
     
     fileprivate func setFlex(){
+        dayChangeView.subviews.forEach{
+            $0.removeFromSuperview()
+        }
         commentContainer.subviews.forEach{
             $0.removeFromSuperview()
         }
@@ -125,37 +127,31 @@ class ChatCell: UITableViewCell {
                     .backgroundColor(.clear)
                     .define{ flex in
                         
-                        flex.addItem(line)
+                        flex.addItem()
                             .direction(.row)
                             .height(1)
                             .width(3000)
                             .backgroundColor(.systemGray5)
                             .alignSelf(.center)
-                            .define{ flex in
-                            }
+                            .define{ flex in}
                         
                         flex.addItem(dayChangeLabel)
                             .direction(.row)
-                        //   .left(10)
                             .backgroundColor(.clear)
                             .alignSelf(.center)
-                            .define{ flex in
-                            }
+                            .define{ flex in}
                         
-                        flex.addItem(line2)
+                        flex.addItem()
                             .direction(.row)
                             .height(1)
                             .width(3000)
-                        //   .left(20)
-                            .right(0)
                             .backgroundColor(.systemGray5)
                             .alignSelf(.center)
-                            .define{ flex in
-                            }
+                            .define{ flex in}
                     }
                 
                 flex.addItem(notiView)
-                    .marginTop(16)
+                    .marginTop(0)
                     .height(30)
                     .left(0).right(0)
                     .direction(.row)
@@ -163,19 +159,14 @@ class ChatCell: UITableViewCell {
                     .justifyContent(.center)
                     .backgroundColor(.systemGray5)
                     .define{ flex in
-                        
-                        
                         flex.addItem(notiViewLabel)
-                            .top(0).bottom(0).left(0).right(0)
-                            .alignSelf(.center)
                             .width(3000)
+                            .direction(.row)
                             .backgroundColor(.clear)
-                            .define{ flex in
-                            }
-                        
+                            .alignSelf(.center)
+                            .define{ flex in}
                     }
-                
-                
+
                 
                 flex.addItem()
                     .direction(.row)
@@ -211,9 +202,7 @@ class ChatCell: UITableViewCell {
                                     .marginRight(16)
                                     .height(20)
                                     .backgroundColor(.clear)
-                                    .define { flex in
-                                        
-                                    }
+                                    .define { flex in}
                                 
                                 flex.addItem(reactionContainer)
                                     .direction(.row)
@@ -221,18 +210,9 @@ class ChatCell: UITableViewCell {
                                     .marginTop(16)
                                     .marginRight(16)
                                     .backgroundColor(.clear)
-                                    .define { flex in
-                                        
-                                    }
-                                
-                                
-                                
+                                    .define { flex in}
                             }
                     }
-                
-                
-                
-                
             }
     }
     
@@ -257,7 +237,7 @@ class ChatCell: UITableViewCell {
                     var num = ("  " + String(reaction.count)).fontSize(16).color(.label)
                     
                     if title.attachment != nil{
-                        num = num.baselineOffset(3)
+                        num = num.baselineOffset(Float((22 - num.fontSize!)/2))
                     }
                     title = title + num
                     
@@ -275,7 +255,20 @@ class ChatCell: UITableViewCell {
                         .marginRight(8)
                 }
             }
-            contentView.flex.layout()
+            reactionContainer.flex.addItem().define { flex in
+                let button = UIButton()
+              
+                button.setImage(UIImage(systemName: "plus"), for: .normal)
+                button.layer.cornerRadius = 4
+                button.layer.borderColor = UIColor.darkGray.cgColor
+                button.layer.borderWidth = 1
+                
+                flex.addItem(button)
+                    .height(35)
+                    .width(button.intrinsicContentSize.width + 20)
+                    .marginTop(8)
+                    .marginRight(8)
+            }
         }else{
             reactionContainer.flex.display(.none)
         }
@@ -295,7 +288,6 @@ class ChatCell: UITableViewCell {
                     .height(30)
                     .width(90)
             }
-            contentView.flex.layout()
         }else{
             commentContainer.flex.display(.none)
         }
@@ -307,23 +299,38 @@ class ChatCell: UITableViewCell {
             // dayChangeView.isHidden = false
             dayChangeView.flex.display(.flex)
             dayChangeLabel.flex.display(.flex)
+            
+            notiView.flex.display(.none)
+            notiViewLabel.flex.display(.none)
+            
             dayChangeLabel.text = viewModel.bodyText
+            dayChangeLabel.flex.markDirty()
+            
             hideTextContentContainer()
             selectionStyle = .none
+            layout()
             return
         }else{
+            dayChangeLabel.flex.display(.none)
             dayChangeView.flex.display(.none)
         }
         
         //MARK: noti label - 누가누가 입장, 퇴장
         if viewModel.notiJSON != nil {
+            dayChangeView.flex.display(.none)
+            dayChangeLabel.flex.display(.none)
+            
             notiView.flex.display(.flex)
             notiViewLabel.flex.display(.flex)
+            
             notiViewLabel.text = viewModel.bodyText
+            notiViewLabel.flex.markDirty()
+            
             hideTextContentContainer()
             selectionStyle = .none
         }else{
             notiView.flex.display(.none)
+            notiViewLabel.flex.display(.none)
         }
     }
     
@@ -333,7 +340,7 @@ class ChatCell: UITableViewCell {
         
         textContentContainer.flex.display(.none)
         profileImage.flex.display(.none)
-        layout()
+        
     }
     
     private func showAllContents(){

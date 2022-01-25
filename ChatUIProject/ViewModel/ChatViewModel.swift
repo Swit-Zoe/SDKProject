@@ -54,12 +54,12 @@ struct ViewModel:Differentiable{
     }
     
     var differenceIdentifier: String? {
-           return created
-       }
-
-   func isContentEqual(to source: ViewModel) -> Bool {
-       return ((created == source.created) && (modified == source.modified)) ? true : false
-   }
+        return created
+    }
+    
+    func isContentEqual(to source: ViewModel) -> Bool {
+        return ((created == source.created) && (modified == source.modified)) ? true : false
+    }
     
     func convertRichText(chat:Chat)->NSAttributedString{
         let data = Data(chat.bodyBlockskit.utf8)
@@ -91,22 +91,21 @@ class ChatViewModelService{
     init(){
         model.toChatViewModel
             .observe(on:/*MainScheduler.instance*/ConcurrentDispatchQueueScheduler(qos: .default))
-                    .subscribe(onNext:{[weak self] in
-                        guard let self = self else {return}
-                        self.viewModel.append($0)
-                        self.chatViewModel.onNext(self.viewModel)
-                }).disposed(by: disposeBag)
-
+            .subscribe(onNext:{[weak self] in
+                guard let self = self else {return}
+                self.viewModel.append($0)
+                self.chatViewModel.onNext(self.viewModel)
+            }).disposed(by: disposeBag)
         
-//        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) {[weak self] timer in
-//            guard let self = self else {return}
-//            if self.viewModel.count > 1{
-//                self.viewModel.removeFirst()
-//                self.chatViewModel.onNext(self.viewModel)
-//            }else{
-//                timer.invalidate()
-//            }
-//        }
+        //        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) {[weak self] timer in
+        //            guard let self = self else {return}
+        //            if self.viewModel.count > 1{
+        //                self.viewModel.removeFirst()
+        //                self.chatViewModel.onNext(self.viewModel)
+        //            }else{
+        //                timer.invalidate()
+        //            }
+        //        }
         
     }
     func fetchRepo(){
