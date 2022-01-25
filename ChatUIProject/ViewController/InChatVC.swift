@@ -37,6 +37,9 @@ class InChatVC: UIViewController {
     var chatViewModelService = ChatViewModelService()
     var viewModel = [ViewModel]()
 
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,6 +51,7 @@ class InChatVC: UIViewController {
         setKeyboardNotification()
         
         render()
+        initKeyCommands()
         
         chatViewModelService.chatViewModel.observe(on:
                                                         /*MainScheduler.instance*/
@@ -181,7 +185,12 @@ class InChatVC: UIViewController {
         }
         messageInputBar.sendButton.addTarget(self, action: #selector(sendMessage), for: .touchUpInside)
     }
-    
+    // MARK: add Key Commands
+    private func initKeyCommands() {
+        KeyCommands.allCases.forEach { keyCommand in
+            addKeyCommand(keyCommand.command)
+        }
+    }
     
     // MARK: SendMessage
     @objc func sendMessage() {
@@ -374,8 +383,8 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         
         //cell.prepareForReuse()
         let idx = indexPath.row
-        let pc = idx > 0 ? viewModel[idx - 1]:nil
-        cell.configure(currentChat: viewModel[idx], presentChat: pc)
+       // let pc = idx > 0 ? viewModel[idx - 1]:nil
+        cell.configure(viewModel: viewModel[idx])
         
 //        cell.chatLabel.detectLink{
 //            cell.linkPreviewContainer.flex.addItem($0)
@@ -531,4 +540,19 @@ extension InChatVC:TTTAttributedLabelDelegate{
     func attributedLabel(_ label: TTTAttributedLabel!, didSelectLinkWith url: URL!) {
         print("Tapped link: \(url)")
     }
+}
+
+// MARK: - KeyCommandActionProtocol
+
+extension InChatVC: KeyCommandActionProtocol {
+    func pressEnter() {
+        sendMessage()
+        print("Enter Pressed")
+    }
+    
+    func pressNewLine() {
+        //textView.insertText("\n")
+        print("New Line")
+    }
+    func dummy(){}
 }

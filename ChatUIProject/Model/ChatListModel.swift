@@ -9,49 +9,58 @@ import Foundation
 import RxSwift
 import RxRelay
 import RichString
+import UIKit
 
 class Converter{
     var initFinish = BehaviorRelay(value: false)
-    var emojiDictionary:[String:[String:String]] = [:]
-    
-    init(){
-        makeEmojiDictionary()
-    }
-    
-    private func convertRichText(richText:String)->NSAttributedString{
-        let data = Data(richText.utf8)
-        let decoder = JSONDecoder()
-        
-        guard let result = try? decoder.decode(BodyBlockSkit.self, from: data) else {return .empty}
-        guard let element = result.elements.first else {return .empty}
-        
-        var viewString = NSAttributedString(string: "")
-        
-        element.elements.forEach{
-            viewString = viewString + $0.applyStyle(emojiDictionary:emojiDictionary)
-        }
-        
-        return viewString
-    }
+    var previousData:Chat?
     
     func convertToViewModel(chatList:ChatList,toChatViewModel:PublishSubject<ViewModel>) {
         chatList.data.forEach{
-            let chatViewModel = ViewModel(text: convertRichText(richText: $0.bodyBlockskit),
-                                          created:  $0.created.getCreatedTimeString(),
-                                          modified: $0.modified.getCreatedTimeString(),
-                                          userName: $0.userName,
-                                          userId: $0.userID)
-            toChatViewModel.onNext(chatViewModel)
+
+            var viewModel = ViewModel(chat:$0)
+            
+            if let previousData = previousData {
+
+                if previousData.created.getDayTimeString() != $0.created.getDayTimeString(){
+                    var temp = ViewModel(chat:$0)
+                    temp.userID = "_"
+                    temp.chatType = "day"
+                    temp.bodyText = $0.created.getDayTimeString()
+                    temp.reactions = nil
+                    temp.msgCmtCnt = nil
+                    
+                    toChatViewModel.onNext(temp)
+                }
+                
+                if let notiJson = $0.notiJSON{
+                    viewModel.notiJSON = notiJson
+                    switch(notiJson.notiTempCode){
+                    case .s010:
+                        viewModel.bodyText = notiJson.notiValues.userName + " 님이 " + notiJson.notiValues.chName + " 채널에 입장했습니다."
+                        break
+                    case .s012:
+                        viewModel.bodyText = notiJson.notiValues.userName + " 님이 " + notiJson.notiValues.chName + " 채널에서 퇴장했습니다."
+                        break
+                    }
+                    toChatViewModel.onNext(viewModel)
+                    self.previousData = $0
+                    return
+                }
+
+                if previousData.created.getCreatedTimeString() == $0.created.getCreatedTimeString() &&
+                    previousData.created.getDayTimeString() == $0.created.getDayTimeString() &&
+                    previousData.userID == $0.userID{
+                    viewModel.created = nil
+                    viewModel.userName = nil
+                }
+                
+            }
+            
+            toChatViewModel.onNext(viewModel)
+            previousData = $0
         }
         initFinish.accept(true)
-    }
-    
-    private func makeEmojiDictionary(){
-        guard let fileURL = Bundle.main.url(forResource: "emoji", withExtension: "json") else { return }
-        guard let data = try? Data(contentsOf: fileURL) else { return }
-       // guard let jsonString = String(data:data,encoding: String.Encoding.utf8) else {return}
-        
-        emojiDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String:[String:String]]
     }
 }
 

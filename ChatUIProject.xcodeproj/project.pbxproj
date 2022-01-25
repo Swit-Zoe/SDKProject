@@ -43,6 +43,8 @@
 		EEA8650027856F6600EBA6A1 /* ChatData.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEA864FF27856F6600EBA6A1 /* ChatData.swift */; };
 		EEA865032785791E00EBA6A1 /* MyInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEA865022785791E00EBA6A1 /* MyInfo.swift */; };
 		EEB94559279E38AE00CA8280 /* UIImage+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB94558279E38AE00CA8280 /* UIImage+Extension.swift */; };
+		EEB9455B279E629C00CA8280 /* KeyCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB9455A279E629C00CA8280 /* KeyCommands.swift */; };
+		EEB9455E279FB8EB00CA8280 /* EmojiUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB9455D279FB8EB00CA8280 /* EmojiUtils.swift */; };
 		EEC4A10027788B2A00B0212B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC4A0FF27788B2A00B0212B /* AppDelegate.swift */; };
 		EEC4A10227788B2A00B0212B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC4A10127788B2A00B0212B /* SceneDelegate.swift */; };
 		EEC4A10427788B2A00B0212B /* InChatVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEC4A10327788B2A00B0212B /* InChatVC.swift */; };
@@ -120,6 +122,8 @@
 		EEA864FF27856F6600EBA6A1 /* ChatData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatData.swift; sourceTree = "<group>"; };
 		EEA865022785791E00EBA6A1 /* MyInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyInfo.swift; sourceTree = "<group>"; };
 		EEB94558279E38AE00CA8280 /* UIImage+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extension.swift"; sourceTree = "<group>"; };
+		EEB9455A279E629C00CA8280 /* KeyCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCommands.swift; sourceTree = "<group>"; };
+		EEB9455D279FB8EB00CA8280 /* EmojiUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiUtils.swift; sourceTree = "<group>"; };
 		EEC4A0FC27788B2A00B0212B /* ChatUIProject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatUIProject.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EEC4A0FF27788B2A00B0212B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EEC4A10127788B2A00B0212B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -294,6 +298,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		EEB9455C279FB8B600CA8280 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				EEB9455D279FB8EB00CA8280 /* EmojiUtils.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		EEC4A0F327788B2A00B0212B = {
 			isa = PBXGroup;
 			children = (
@@ -326,6 +338,7 @@
 				C8315A12278D5239005C0017 /* Service */,
 				EEA865012785790600EBA6A1 /* Model */,
 				EE80D7CE2779695C001D9762 /* extension */,
+				EEB9455C279FB8B600CA8280 /* Utils */,
 				EEC4A10827788B2B00B0212B /* Assets.xcassets */,
 				C8315A052786B87C005C0017 /* Colors.xcassets */,
 				EEC4A10A27788B2B00B0212B /* LaunchScreen.storyboard */,
@@ -335,6 +348,7 @@
 				EE75107D279A699100477EAE /* emoji_sort.json */,
 				EE75107C279A699100477EAE /* emoji.json */,
 				EEC4A10D27788B2B00B0212B /* Info.plist */,
+				EEB9455A279E629C00CA8280 /* KeyCommands.swift */,
 			);
 			path = ChatUIProject;
 			sourceTree = "<group>";
@@ -598,6 +612,7 @@
 				EEE7306527900B6200095744 /* UIFont+Extension.swift in Sources */,
 				EE32FB7A279C0B8100F3FA85 /* ChatListModel.swift in Sources */,
 				EEE9D017278685DC00ACBC56 /* ChatListVC.swift in Sources */,
+				EEB9455B279E629C00CA8280 /* KeyCommands.swift in Sources */,
 				EE46AB8B279E2AB30031F81D /* Emoji.swift in Sources */,
 				EE32FB78279BF15500F3FA85 /* ChatListService.swift in Sources */,
 				EEE9D019278685FA00ACBC56 /* ProjectListVC.swift in Sources */,
@@ -611,6 +626,7 @@
 				EE856A0F27789A080043D306 /* ChatCell.swift in Sources */,
 				C8FD50BF278D5AB00000E24B /* TaskListModel.swift in Sources */,
 				EEE9D01327867FCE00ACBC56 /* PageVC.swift in Sources */,
+				EEB9455E279FB8EB00CA8280 /* EmojiUtils.swift in Sources */,
 				EEE9D0152786803000ACBC56 /* TaskListVC.swift in Sources */,
 				EE7510792799522200477EAE /* Date+Extension.swift in Sources */,
 				EE94CC7F27941B210027F354 /* URL+Extension.swift in Sources */,

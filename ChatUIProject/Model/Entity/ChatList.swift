@@ -55,7 +55,7 @@ struct Chat: Differentiable,Equatable,Codable {
     let reactions: [Reaction]
     let bookmarkYn: BookmarkYn
     let attachments: [JSONAny]
-    let chID: ChID
+    let chID: String
     let shareData: JSONNull?
     let ogData: [OgDatum]
 
@@ -127,11 +127,9 @@ enum FileMIME: String, Codable {
 
 enum BookmarkYn: String, Codable {
     case n = "N"
+    case y = "Y"
 }
 
-enum ChID: String, Codable {
-    case the57Ldiwwg36L0BpYS = "57ldiwwg36L0bpYS"
-}
 
 enum ChatType: String, Codable {
     case sys = "sys"
@@ -222,13 +220,6 @@ struct OgDatum: Codable {
     }
 }
 
-enum Modified: String, Codable {
-    case empty = ""
-    case the20211118T111154134842Z = "2021-11-18T11:11:54.134842Z"
-    case the20211125T135108091377Z = "2021-11-25T13:51:08.091377Z"
-    case the20211128T071103867583Z = "2021-11-28T07:11:03.867583Z"
-}
-
 // MARK: - NotiJSON
 struct NotiJSON: Codable {
     let notiValues: NotiValues
@@ -248,7 +239,7 @@ enum NotiTempCode: String, Codable {
 // MARK: - NotiValues
 struct NotiValues: Codable {
     let userName: String
-    let chName: ChName
+    let chName: String
     let fromUserName: String?
 
     enum CodingKeys: String, CodingKey {

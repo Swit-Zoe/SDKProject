@@ -18,7 +18,7 @@ public extension DateFormatter {
     static let dayDateFormat : DateFormatter = {
        let df = DateFormatter()
         df.locale = Locale(identifier: Locale.preferredLanguages[0])
-        df.dateFormat = "MM dd EEEE"
+        df.dateFormat = " MMM dd일 EEEE "
         return df
     }()
 }

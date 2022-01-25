@@ -6,36 +6,56 @@
 import Foundation
 import UIKit
 import RichString
-// MARK: - Welcome
-struct BodyBlockSkit: Codable {
-    let type: String
-    let elements: [Elements]
+
+struct BodyBlocksKit : Codable{
+    var type : String?
+    var elements : [Elements]?
 }
 
-// MARK: - WelcomeElement
-struct Elements: Codable {
-    let type: String
-    let elements: [TextElements]
+struct Elements : Codable{
+    var type : String?
+    var elements : [TextElements]?
 }
 
-// MARK: - ElementElementClass
-struct TextElements: Codable {
-    let type: RichType
-    let userID, content, name,url: String?
-    let styles : Styles?
-
+struct TextElements : Codable{
+    var type : RichType?
+    var content : String?
+    var styles : Styles?
+    var url : String?
+    var indent : Int?
+    var elements : [TextElements]?
+    var userID : String?
+    var name : String?
+    
     enum CodingKeys: String, CodingKey {
         case type
         case userID = "user_id"
         case content, name, url, styles
+        case indent
     }
 }
+
+struct Styles : Codable {
+    var bold : Bool?
+    var italic : Bool?
+    var strike : Bool?
+    var code : Bool?
+}
+
+enum RichType: String, Codable {
+    case text = "rt_text"
+    case mention = "rt_mention"
+    case link = "rt_link"
+    case emoji = "rt_emoji"
+}
+
 extension TextElements{
-    func applyStyle(emojiDictionary:[String:[String:String]])->NSAttributedString{
-        
+    func applyStyle()->NSAttributedString{
         switch(self.type){
         case .text:
-            guard let content = self.content else {return .empty}
+            guard let content = self.content else {
+                return .empty
+            }
             var mutable = content
                 .font(UIFont.regular)
                 .color(UIColor.labelColor)
@@ -72,21 +92,9 @@ extension TextElements{
             return mutable
             
         case .emoji:
-            guard var name = self.name else {return .empty}
-            name.removeFirst()
-            name.removeLast()
+            guard let name = self.name else {return .empty}
 
-            guard let inner = emojiDictionary[name] else {
-                let attachment = NSTextAttachment()
-            
-                attachment.image = UIImage(named: "swit")
-                attachment.bounds = CGRect(x: 0, y: 0, width: 28, height: 28)
-    
-                let emoji = NSMutableAttributedString()
-                emoji.append(NSAttributedString(attachment: attachment))
-                return emoji
-            }
-            return NSAttributedString(string: inner["name"] ?? "").fontSize(16)//contents.fontSize(16)
+            return EmojiUtils.shared.getEmoji(name: name,size:22)
             
         case .mention:
             guard let userID = self.userID else {return .empty}
@@ -96,21 +104,8 @@ extension TextElements{
                 .fontSize(16)
                 .backgroundColor(.systemGray5)
             
+        case .none:
+            return .empty
         }
     }
-}
-
-enum RichType: String, Codable {
-    case text = "rt_text"
-    case mention = "rt_mention"
-    case link = "rt_link"
-    case emoji = "rt_emoji"
-}
-
-
-struct Styles: Codable {
-    let bold: Bool?
-    let code: Bool?
-    let italic: Bool?
-    let strike: Bool?
 }
