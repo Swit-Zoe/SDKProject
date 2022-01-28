@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 import LinkPresentation
+import Gifu
+import Lottie
 
 
 extension UITextView{
@@ -44,4 +46,80 @@ extension UITextView{
         }
     
     }
+    
+    open override func layoutSubviews() {
+        //self.ReplaceAttachmentGif()
+     //   convertGif()
+     //   super.layoutSubviews()
+        print(#function)
+    }
+    
+    public func setLottieEmoji() {
+        DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
+            self.convertGif()
+        }
+        //self.convertGif()
+
+//        NotificationCenter.default.addObserver(
+//            forName: UITextView.textDidChangeNotification,
+//            object: self,
+//            queue: .main
+//        ) { [weak self] _ in
+//            self?.convertGif()
+//        }
+    }
+       
+    func convertGif(){
+        let length = self.attributedText.length
+        self.attributedText.enumerateAttribute(.attachment, in: NSRange(location: 0, length: length), options: [], using: { value, range, stop in
+
+                if value is MyTextAttachment {
+                    
+                    let attachment = value as? MyTextAttachment
+
+                    if attachment?.attachType == .lottie {
+
+                        self.selectedRange = range
+
+                        guard
+                        let position1 = self.position(from: self.beginningOfDocument, offset: range.location),
+                        let position2 = self.position(from: position1, offset: range.length),
+                        let cRange = self.textRange(from: position1, to: position2)
+                        else {return}
+                            
+                        var rect = self.firstRect(for: cRange)
+               //         var selectionRect:[UITextSelectionRect]
+    //                    if let selectedTextRange = self.selectedTextRange {
+    //                        selectionRect = self.selectionRects(for: selectedTextRange)//self.firstRect(for: selectedTextRange)
+    //                    }else{
+    //                        return
+    //                    }
+                       // selectionRect.forEach{rect = rect.union($0.rect);}
+//                        if let selectedTextRange = self.selectedTextRange {
+//                           rect = self.firstRect(for: selectedTextRange)
+//                       }else{
+//                           return
+//                       }
+                    //    rect.origin.x = 5
+                     //   rect.origin.y = 7
+                        print( "\(rect.origin.x) + \(rect.origin.y)")
+                        //rect.size = CGSize(width: 20, height: 20)
+                        
+                        let av = AnimationView(name: "heart")
+                        av.play()
+                        av.loopMode = .loop
+                        av.frame = rect
+
+                        self.addSubview(av)
+                       // attachment?.image = UIImage.imageWithColor(color: .clear)
+
+                    }
+                }
+            
+            
+
+        })
+        self.selectedRange = NSRange(location: 0, length: 0)
+    }
+    
 }

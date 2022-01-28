@@ -6,30 +6,32 @@
 //
 
 import UIKit
+import RxFlow
+import RxSwift
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    
+    var coordinator = FlowCoordinator()
+    var disposeBag: DisposeBag = DisposeBag()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
-        
         let window = UIWindow(windowScene: windowScene)
-        
-        window.backgroundColor = UIColor.backgroundColor
-        
-        window.makeKeyAndVisible()
-        
-        let viewController = PageVC(transitionStyle: .scroll, navigationOrientation: .horizontal, options: nil)
-        let navigationController = UINavigationController(rootViewController: viewController)
-        window.rootViewController = navigationController//viewController
-        //navigationController
-        
         self.window = window
+        self.window?.backgroundColor = UIColor.backgroundColor
+        
+       // let navigationController = UINavigationController()
+        let appFlow = AppFlow(window: self.window!)
+        self.coordinator.coordinate(flow: appFlow, with: AppStepper())
+        
+   //     let coordinator = AppCoordinator(navigationController: navigationController)
+    //    coordinator.start()
+        
+        self.window?.makeKeyAndVisible()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

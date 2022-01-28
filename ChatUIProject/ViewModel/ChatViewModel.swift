@@ -10,7 +10,8 @@ import DifferenceKit
 import RxSwift
 import RichString
 
-struct ViewModel:Differentiable{
+struct ViewModel:Differentiable,Hashable{
+    
     var text:NSAttributedString?
     var created:String?
     var modified:String?
@@ -53,12 +54,20 @@ struct ViewModel:Differentiable{
         self.msgCmtCnt = chat.msgCmtCnt
     }
     
-    var differenceIdentifier: String? {
-        return created
+    var differenceIdentifier: Self {
+        return self
     }
     
     func isContentEqual(to source: ViewModel) -> Bool {
         return ((created == source.created) && (modified == source.modified)) ? true : false
+    }
+    
+    static func == (lhs: ViewModel, rhs: ViewModel) -> Bool {
+        return ((lhs.created == rhs.created) && (lhs.modified == rhs.modified)) ? true : false
+    }
+    func hash(into hasher: inout Hasher) {
+//        hasher.combine(x)
+//        hasher.combine(y)
     }
     
     func convertRichText(chat:Chat)->NSAttributedString{
@@ -79,6 +88,8 @@ struct ViewModel:Differentiable{
         
         return viewString
     }
+
+    
 }
 
 
@@ -97,15 +108,19 @@ class ChatViewModelService{
                 self.chatViewModel.onNext(self.viewModel)
             }).disposed(by: disposeBag)
         
-        //        Timer.scheduledTimer(withTimeInterval: 1, repeats: true) {[weak self] timer in
-        //            guard let self = self else {return}
-        //            if self.viewModel.count > 1{
-        //                self.viewModel.removeFirst()
-        //                self.chatViewModel.onNext(self.viewModel)
-        //            }else{
-        //                timer.invalidate()
-        //            }
-        //        }
+            
+        // Differnece Kit Test Timer
+//            Timer.scheduledTimer(withTimeInterval: 5, repeats: true) {[weak self] timer in
+//                guard let self = self else {return}
+//                if self.viewModel.count > 1{
+//                    let rand = Int.random(in: 0..<self.viewModel.count)
+//                    self.viewModel.remove(at: rand)//.removeLast()
+//                    self.chatViewModel.onNext(self.viewModel)
+//                }else{
+//                    timer.invalidate()
+//                }
+//                print("delete random row")
+//            }
         
     }
     func fetchRepo(){

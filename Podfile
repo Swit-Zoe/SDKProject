@@ -22,6 +22,10 @@ target 'ChatUIProject' do
   pod 'Alamofire'
   pod 'Differ'
   pod 'DifferenceKit'
+  pod 'Then'
+  pod 'Streamoji'
+  pod 'Gifu'
+  pod 'lottie-ios'
   target 'ChatUIProjectTests' do
     inherit! :search_paths
     # Pods for testing

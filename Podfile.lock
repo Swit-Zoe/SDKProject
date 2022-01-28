@@ -8,7 +8,10 @@ PODS:
   - DifferenceKit/UIKitExtension (1.2.0):
     - DifferenceKit/Core
   - FlexLayout (1.3.23)
+  - Gifu (3.3.1)
+  - lottie-ios (3.3.0)
   - Nantes (0.1.2)
+  - Nuke (8.4.1)
   - PinLayout (1.10.0)
   - Realm (10.20.1):
     - Realm/Headers (= 10.20.1)
@@ -32,7 +35,12 @@ PODS:
     - RxSwift (= 6.2.0)
   - RxSwift (6.2.0)
   - SnapKit (5.0.1)
+  - Streamoji (0.1.8):
+    - Nuke (~> 8.4)
+    - SwiftyGif (~> 5.2)
+  - SwiftyGif (5.4.2)
   - SwiftyImage (1.6.0)
+  - Then (2.7.0)
   - TTTAttributedLabel (2.0.0)
 
 DEPENDENCIES:
@@ -40,6 +48,8 @@ DEPENDENCIES:
   - Differ
   - DifferenceKit
   - FlexLayout
+  - Gifu
+  - lottie-ios
   - Nantes
   - PinLayout
   - RealmSwift
@@ -50,7 +60,9 @@ DEPENDENCIES:
   - RxKeyboard
   - RxSwift
   - SnapKit
+  - Streamoji
   - SwiftyImage
+  - Then
   - TTTAttributedLabel
 
 SPEC REPOS:
@@ -59,7 +71,10 @@ SPEC REPOS:
     - Differ
     - DifferenceKit
     - FlexLayout
+    - Gifu
+    - lottie-ios
     - Nantes
+    - Nuke
     - PinLayout
     - Realm
     - RealmSwift
@@ -71,7 +86,10 @@ SPEC REPOS:
     - RxRelay
     - RxSwift
     - SnapKit
+    - Streamoji
+    - SwiftyGif
     - SwiftyImage
+    - Then
     - TTTAttributedLabel
 
 SPEC CHECKSUMS:
@@ -79,7 +97,10 @@ SPEC CHECKSUMS:
   Differ: 3b6bd78e2b20cc795d9a86f7641d087524e4273e
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
   FlexLayout: 5b44c0538e7eaa2110e3160dfdfb74611676fb91
+  Gifu: 416d4e38c4c2fed012f019e0a1d3ffcb58e5b842
+  lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
   Nantes: 0396442578e32242223fed46050dea1850236184
+  Nuke: d780e3507a86b86c589ab3cc5cd302d5456f06fb
   PinLayout: e50e9a748b632905fca6e67043ea4b05d6c92186
   Realm: fac5ecd031fcb81171627b74944c885662d4b266
   RealmSwift: 9b02d25acb46a14756bde9893abb99e2e3675923
@@ -91,9 +112,12 @@ SPEC CHECKSUMS:
   RxRelay: e72dbfd157807478401ef1982e1c61c945c94b2f
   RxSwift: d356ab7bee873611322f134c5f9ef379fa183d8f
   SnapKit: 97b92857e3df3a0c71833cce143274bf6ef8e5eb
+  Streamoji: d068bb7a71f77d69ba3da167de4048db21de8548
+  SwiftyGif: dec758a9dd3d278e5a855dbf279bf062c923c387
   SwiftyImage: 65c71a147f417fc0fe137d17b135aaa666279a09
+  Then: acfe0be7e98221c6204e12f8161459606d5d822d
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
 
-PODFILE CHECKSUM: 6d695b44f782da03921e9c8c91a9b5aa7b646786
+PODFILE CHECKSUM: ad02cac0836c360ff06c4ff4a3605f798ac6c57d
 
 COCOAPODS: 1.11.2

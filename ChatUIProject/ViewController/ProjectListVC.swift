@@ -8,8 +8,12 @@
 import Foundation
 import UIKit
 import SnapKit
+import RxFlow
+import RxSwift
+import RxCocoa
 
-class ProjectListVC:UIViewController{
+class ProjectListVC:UINavigationController,Stepper{
+    var steps: PublishRelay<Step> = PublishRelay<Step>()
     let tableView = UITableView()
     
     override func viewDidLoad() {
@@ -24,6 +28,10 @@ class ProjectListVC:UIViewController{
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
         
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+     //   self.navigationController?.isNavigationBarHidden = true
     }
 }
 extension ProjectListVC:UITableViewDelegate,UITableViewDataSource{

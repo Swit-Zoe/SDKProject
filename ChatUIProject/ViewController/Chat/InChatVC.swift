@@ -8,21 +8,28 @@
 
 import UIKit
 import RxKeyboard
+import RxFlow
 import RxSwift
 import RxCocoa
 import SnapKit
 import RealmSwift
 import RichString
-import SwiftUI
-import Nantes
-import TTTAttributedLabel
-import LinkPresentation
+
+//import Nantes
+//import TTTAttributedLabel
+//import LinkPresentation
 import Differ
 import DifferenceKit
 
-class InChatVC: UIViewController {
+protocol InChatVCDelegate{
+    func backTapped()
+    func messageTapped()
+}
+
+class InChatVC: UIViewController,Stepper {
+    var steps: PublishRelay<Step> = PublishRelay<Step>()
     
-    
+    var inChatVCDelegate:InChatVCDelegate?
     
     // MARK: View
     let tableView:UITableView = UITableView()
@@ -41,9 +48,11 @@ class InChatVC: UIViewController {
         return true
     }
     
+    @objc func back(){
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Chat Control"
         
         setToolChainView()
         setMessageInputBar()
@@ -53,34 +62,25 @@ class InChatVC: UIViewController {
         render()
         initKeyCommands()
         
-        chatViewModelService.chatViewModel.observe(on:
-                                                    /*MainScheduler.instance*/
-                                                   ConcurrentDispatchQueueScheduler(qos: .default))
-            .scan([ViewModel]()) {[weak self] in
-                guard let self = self else {return $1}
-                //                self.tableView.animateRowChanges(
-                //                    oldData: oldValue,
-                //                    newData: self.chatList!.data,
-                //                    deletionAnimation: .middle,
-                //                    insertionAnimation: .middle)
-                
-                let changeset = StagedChangeset(source: $0, target: $1)
-                
-                DispatchQueue.main.async {
-                    self.tableView.reload(using: changeset, with: .right) { data in
-                        self.viewModel = data
-                    }
-                }
-                return $1
-            }
-            .subscribe(onNext:{element in
-            }).disposed(by: disposeBag)
-        chatViewModelService.fetchRepo()
-                
-        DispatchQueue.main.asyncAfter(deadline: .now()+0.5){
-            self.tableView.scrollToRow(
-                at: IndexPath(row: self.viewModel.count - 1, section: 0),
-                at: .bottom, animated: true)
+        subscribeViewModel()
+        
+        //navigationItem.backBarButtonItem = UIBarButtonItem(image: UIImage(systemName:"chevron.backward"), style: .done, target: self, action: nil)
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName:"chevron.backward"), style: .done, target: self, action: #selector(finish))
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.isNavigationBarHidden = false
+        self.tabBarController?.tabBar.isHidden = true
+        print("viewModelCount: \(viewModel.count)")
+
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        //print("sadfasdf")
+        if self.isMovingFromParent {
+          //  inChatVCDelegate?.backTapped()
         }
     }
     
@@ -92,32 +92,91 @@ class InChatVC: UIViewController {
         self.tableView.addGestureRecognizer(tapGesture)
         
         RxKeyboard.instance.visibleHeight
-            .drive(onNext: { [weak self] keyboardVisibleHeight in
-                print("keyboard : \(keyboardVisibleHeight)")
-                guard let `self` = self else { return }
-                self.toolChainView.snp.updateConstraints {
-                    if self.keyboardH >= keyboardVisibleHeight{
-                        $0.height.equalTo(0)
-                        if #available(iOS 15.0, *){}else {
-                            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-keyboardVisibleHeight)
+                    .drive(onNext: { [weak self] keyboardVisibleHeight in
+                        print(keyboardVisibleHeight)
+                        guard let `self` = self else { return }
+                        self.toolChainView.snp.updateConstraints {
+                            if self.keyboardH > keyboardVisibleHeight{
+                                $0.height.equalTo(0)
+                                $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-keyboardVisibleHeight)
+                                self.tableView.contentOffset.y -= self.keyboardH
+                                
+                            }else{
+                                $0.height.equalTo(64)
+                                $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-keyboardVisibleHeight + self.view.safeAreaInsets.bottom)
+                                self.tableView.contentOffset.y += keyboardVisibleHeight
+                            }
                         }
-                        //self.tableView.contentOffset.y -= self.keyboardH
-                    }else{
-                        $0.height.equalTo(64)
-                        if #available(iOS 15.0, *){}else {
-                            $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-keyboardVisibleHeight + self.view.safeAreaInsets.bottom)
+                        
+                        self.keyboardH = keyboardVisibleHeight
+                        self.view.setNeedsLayout()
+                        self.view.layoutIfNeeded()
+                    })
+                    .disposed(by: self.disposeBag)
+
+        //TODO: 키보드 높이가 변경될때마다 onNext 가 계속 호출되어야 하지만 키보드가 완전히 나타나거나 완전히 사라질때에만 호출됨
+    }
+    
+    private func subscribeViewModel(){
+        chatViewModelService.chatViewModel.observe(on:
+                                                    /*MainScheduler.instance*/
+                                                   ConcurrentDispatchQueueScheduler(qos: .default))
+            .scan([ViewModel]()) {[weak self] in
+                guard let self = self else {return $1}
+
+                let diff = $0.extendedDiff($1)
+//                let new = $1
+//                let old = $0
+//                DispatchQueue.main.async {
+//                    self.tableView.animateRowChanges(
+//                        oldData: old,
+//                        newData: new,
+//                        deletionAnimation: .middle,
+//                        insertionAnimation: .middle)
+//                }
+
+                let changeset = StagedChangeset(source: $0, target: $1)
+
+                DispatchQueue.main.async {
+                    self.tableView.reload(using: changeset, with: .right) { data in
+                        self.viewModel = data
+                        diff.elements.forEach{
+                            switch($0){
+                                
+                            case .delete(at: let at):
+                                self.tableView.scrollToRow(
+                                    at: IndexPath(row: at, section: 0),
+                                    at: .bottom, animated: true)
+                            
+                            case .insert(at: let at):
+                                let indexPath = IndexPath(row: at, section: 0)
+                                if self.tableView.hasRowAtIndexPath(indexPath: indexPath as NSIndexPath) {
+                                    self.tableView.scrollToRow(
+                                        at: indexPath,
+                                        at: .bottom, animated: true)
+                                }
+                                
+                            
+                            default:
+                                break
+                            }
+                           
                         }
-                        self.tableView.contentOffset.y += keyboardVisibleHeight + self.view.safeAreaInsets.bottom
+                     //   diff.elements.firstIndex(where: )
                     }
                 }
                 
-                self.keyboardH = keyboardVisibleHeight
+                return $1
+            }
+            .subscribe(onNext:{element in
+            }).disposed(by: disposeBag)
+        chatViewModelService.fetchRepo()
                 
-                self.view.setNeedsLayout()
-                self.view.layoutIfNeeded()
-            })
-            .disposed(by: self.disposeBag)
-        //TODO: 키보드 높이가 변경될때마다 onNext 가 계속 호출되어야 하지만 키보드가 완전히 나타나거나 완전히 사라질때에만 호출됨
+//        DispatchQueue.main.asyncAfter(deadline: .now()+0.5){
+//            self.tableView.scrollToRow(
+//                at: IndexPath(row: self.viewModel.count - 1, section: 0),
+//                at: .bottom, animated: true)
+//        }
     }
     
     override func viewDidLayoutSubviews() {
@@ -156,14 +215,14 @@ class InChatVC: UIViewController {
         toolChainView.snp.makeConstraints {
             
             //$0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-            if #available(iOS 15.0, *) {
-                $0.leading.trailing.equalTo(view.keyboardLayoutGuide)
-                $0.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-view.safeAreaInsets.bottom)
-                self.view.keyboardLayoutGuide.followsUndockedKeyboard = true
-            } else {
+//            if #available(iOS 15.0, *) {
+//                $0.leading.trailing.equalTo(view.keyboardLayoutGuide)
+//                $0.bottom.equalTo(view.keyboardLayoutGuide.snp.top).offset(-view.safeAreaInsets.bottom)
+//                self.view.keyboardLayoutGuide.followsUndockedKeyboard = true
+//            } else {
                 $0.leading.trailing.equalToSuperview()
                 $0.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom)
-            }
+           // }
             $0.height.equalTo(0)
         }
         toolChainView.textButton.addTarget(self, action: #selector(toolChainFontViewSet), for: .touchUpInside)
@@ -378,6 +437,11 @@ class InChatVC: UIViewController {
         
         self.present(controller, animated: true, completion: nil)
     }
+    
+    @objc func finish() {
+        print(#function)
+        _ = navigationController?.popViewController(animated: true)
+    }
 }
 
 // MARK: TableView Extension
@@ -388,7 +452,10 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         //cell.prepareForReuse()
         let idx = indexPath.row
         // let pc = idx > 0 ? viewModel[idx - 1]:nil
-        cell.configure(viewModel: viewModel[idx])
+        if idx < viewModel.count {
+            cell.configure(viewModel: viewModel[idx])
+        }
+        
         
         //        cell.chatLabel.detectLink{
         //            cell.linkPreviewContainer.flex.addItem($0)
@@ -410,7 +477,9 @@ extension InChatVC:UITableViewDelegate,UITableViewDataSource{
         return UITableView.automaticDimension
     }
     
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        steps.accept(FlowStep.toInChatComment(withMessageID:indexPath.row))
+    }
 }
 
 // MARK: TextView Extension
@@ -514,6 +583,7 @@ extension InChatVC:UITextViewDelegate{
     
     
 }
+/*
 extension InChatVC:NantesLabelDelegate{
     func attributedLabel(_ label: NantesLabel, didSelectAddress addressComponents: [NSTextCheckingKey : String]) {
         
@@ -545,7 +615,7 @@ extension InChatVC:TTTAttributedLabelDelegate{
         print("Tapped link: \(url)")
     }
 }
-
+*/
 // MARK: - KeyCommandActionProtocol
 
 extension InChatVC: KeyCommandActionProtocol {

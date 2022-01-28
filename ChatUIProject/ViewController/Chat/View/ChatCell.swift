@@ -6,6 +6,7 @@ import TTTAttributedLabel
 import Nantes
 import RichString
 
+
 class ChatCell: UITableViewCell {
     static let reuseIdentifier = "ChatCellView"
     fileprivate let padding: CGFloat = 10
@@ -31,7 +32,7 @@ class ChatCell: UITableViewCell {
     fileprivate let notiViewLabel : UILabel = {
         let label = UILabel()
         label.textColor = .label
-        label.numberOfLines = 1
+        label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 16, weight: .regular)
         label.textAlignment = .center
         
@@ -56,7 +57,7 @@ class ChatCell: UITableViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        
+        selectionStyle = .default
         setFlex()
         layout()
     }
@@ -64,7 +65,9 @@ class ChatCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         selectionStyle = .default
-        
+        selectedBackgroundView = UIView().then{
+            $0.backgroundColor = .clear
+        }
         separatorInset = .zero
         
         nameLabel.font = UIFont.boldSystemFont(ofSize: 16)
@@ -152,7 +155,7 @@ class ChatCell: UITableViewCell {
                 
                 flex.addItem(notiView)
                     .marginTop(0)
-                    .height(30)
+                    //.height(30)
                     .left(0).right(0)
                     .direction(.row)
                     .alignSelf(.center)
@@ -160,7 +163,8 @@ class ChatCell: UITableViewCell {
                     .backgroundColor(.systemGray5)
                     .define{ flex in
                         flex.addItem(notiViewLabel)
-                            .width(3000)
+                            .width(110%)
+                            .padding(2)
                             .direction(.row)
                             .backgroundColor(.clear)
                             .alignSelf(.center)
@@ -229,7 +233,7 @@ class ChatCell: UITableViewCell {
     private func setReactionLayout(viewModel:ViewModel){
         if let reactions = viewModel.reactions ,reactions.count > 0{
             reactions.forEach{ reaction in
-                reactionContainer.flex.addItem().define { flex in
+                reactionContainer.flex.define { flex in
                     let button = UIButton()
                     let key = reaction.value
                     
@@ -237,7 +241,7 @@ class ChatCell: UITableViewCell {
                     var num = ("  " + String(reaction.count)).fontSize(16).color(.label)
                     
                     if title.attachment != nil{
-                        num = num.baselineOffset(Float((22 - num.fontSize!)/2))
+                        num = num.baselineOffset(Float((22 - num.fontSize!)))
                     }
                     title = title + num
                     
@@ -248,14 +252,34 @@ class ChatCell: UITableViewCell {
                     button.layer.borderColor = UIColor.darkGray.cgColor
                     button.layer.borderWidth = 1
                     
-                    flex.addItem(button)
+                    let textView = UITextView().then {
+                        $0.isEditable = true
+                        $0.isSelectable = false
+                        $0.isScrollEnabled = false
+                        $0.attributedText = title//NSAttributedString(string: ":partycat:").fontSize(22) + num
+                        $0.backgroundColor = .clear
+                        $0.layer.borderColor = UIColor.darkGray.cgColor
+                        $0.layer.borderWidth = 1
+                        $0.textAlignment = .center
+                        $0.layer.cornerRadius = 4
+                        $0.sizeToFit()
+                    }
+                    textView.setNeedsLayout()
+                    
+                    flex.addItem(textView)
                         .height(35)
-                        .width(button.intrinsicContentSize.width + 20)
+                        //.width(textView.intrinsicContentSize.width + 20)
                         .marginTop(8)
                         .marginRight(8)
+                        .justifyContent(.center)
+                    textView.setLottieEmoji()
+                    //textView.layoutIfNeeded()
+                    //textView.convertGif()
+                  //  textView.configureEmojis(EmojiUtils.exampleEmojis,rendering: .highestQuality)
+                    
                 }
             }
-            reactionContainer.flex.addItem().define { flex in
+            reactionContainer.flex.define { flex in
                 let button = UIButton()
               
                 button.setImage(UIImage(systemName: "plus"), for: .normal)
@@ -278,11 +302,12 @@ class ChatCell: UITableViewCell {
         if let msgCmtCnt = viewModel.msgCmtCnt, msgCmtCnt > 0{
             commentContainer.flex.addItem().define { flex in
                 let button = UIButton()
-                button.setTitle("댓글 " + String(msgCmtCnt), for: .normal)
+                button.setAttributedTitle("댓글 ".color(.label) + String(msgCmtCnt).color(.label), for: .normal)
                 button.titleLabel?.font = UIFont.regular
                 button.layer.cornerRadius = 4
                 button.layer.borderColor = UIColor.darkGray.cgColor
                 button.layer.borderWidth = 1
+                button.titleLabel?.textColor = .label
                 
                 flex.addItem(button)
                     .height(30)
@@ -375,6 +400,9 @@ class ChatCell: UITableViewCell {
         }else{
             profileImage.flex.height(48)
         }
+        
+        chatLabel.setLottieEmoji()
+      //  chatLabel.configureEmojis(EmojiUtils.exampleEmojis)
     }
     
     override func layoutSubviews() {
@@ -394,3 +422,4 @@ class ChatCell: UITableViewCell {
         return contentView.frame.size
     }
 }
+

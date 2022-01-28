@@ -8,7 +8,13 @@
 import Foundation
 import UIKit
 import SnapKit
-class ChatListVC:UIViewController{
+import RxFlow
+import RxCocoa
+import RxSwift
+
+class ChatListVC:UINavigationController,Stepper{
+    var steps: PublishRelay<Step> = PublishRelay<Step>()
+    
     let tableView = UITableView()
     
     override func viewDidLoad() {
@@ -22,8 +28,13 @@ class ChatListVC:UIViewController{
         tableView.snp.makeConstraints {
             $0.edges.equalTo(view.safeAreaLayoutGuide)
         }
-        
+
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+       // self.navigationController?.isNavigationBarHidden = true
+    }
+    
 }
 extension ChatListVC:UITableViewDelegate,UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -33,9 +44,7 @@ extension ChatListVC:UITableViewDelegate,UITableViewDataSource{
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let nextVC = InChatVC()
-        nextVC.modalPresentationStyle = .fullScreen
-        navigationController?.pushViewController(nextVC, animated: true)
+        self.steps.accept(FlowStep.toInChat(withChannelID: indexPath.row))
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
