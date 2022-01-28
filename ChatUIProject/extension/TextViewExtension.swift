@@ -54,9 +54,11 @@ extension UITextView{
         print(#function)
     }
     
-    public func setLottieEmoji() {
-        DispatchQueue.main.asyncAfter(deadline: .now()+0.5) {
-            self.convertGif()
+    public func setAnimationEmoji() {
+        DispatchQueue.main.asyncAfter(deadline: .now()) {
+            self.setNeedsLayout()
+            self.convertAnimationEmoji(){}
+            self.layoutIfNeeded()
         }
         //self.convertGif()
 
@@ -69,55 +71,43 @@ extension UITextView{
 //        }
     }
        
-    func convertGif(){
+    func convertAnimationEmoji(complete:@escaping () -> ()){
         let length = self.attributedText.length
         self.attributedText.enumerateAttribute(.attachment, in: NSRange(location: 0, length: length), options: [], using: { value, range, stop in
-
                 if value is MyTextAttachment {
-                    
                     let attachment = value as? MyTextAttachment
-
+                    
+                    self.selectedRange = range
+                    var rect = CGRect()
+                    if let selectedTextRange = self.selectedTextRange {
+                        rect = self.firstRect(for: selectedTextRange)
+                    }else{
+                        return
+                    }
+                    if rect.origin.x == .infinity || rect.origin.y == .infinity{
+                        print("inf")
+                        complete()
+                        return
+                    }else{
+                        print(rect.origin.x)
+                        print(rect.origin.y)
+                    }
+                    
                     if attachment?.attachType == .lottie {
-
-                        self.selectedRange = range
-
-                        guard
-                        let position1 = self.position(from: self.beginningOfDocument, offset: range.location),
-                        let position2 = self.position(from: position1, offset: range.length),
-                        let cRange = self.textRange(from: position1, to: position2)
-                        else {return}
-                            
-                        var rect = self.firstRect(for: cRange)
-               //         var selectionRect:[UITextSelectionRect]
-    //                    if let selectedTextRange = self.selectedTextRange {
-    //                        selectionRect = self.selectionRects(for: selectedTextRange)//self.firstRect(for: selectedTextRange)
-    //                    }else{
-    //                        return
-    //                    }
-                       // selectionRect.forEach{rect = rect.union($0.rect);}
-//                        if let selectedTextRange = self.selectedTextRange {
-//                           rect = self.firstRect(for: selectedTextRange)
-//                       }else{
-//                           return
-//                       }
-                    //    rect.origin.x = 5
-                     //   rect.origin.y = 7
-                        print( "\(rect.origin.x) + \(rect.origin.y)")
-                        //rect.size = CGSize(width: 20, height: 20)
-                        
                         let av = AnimationView(name: "heart")
                         av.play()
                         av.loopMode = .loop
+                        av.backgroundBehavior = .pauseAndRestore
+                        av.contentMode = .scaleAspectFill
                         av.frame = rect
-
+                        
                         self.addSubview(av)
-                       // attachment?.image = UIImage.imageWithColor(color: .clear)
-
+                    }else if attachment?.attachType == .gif{
+                        let iv = GIFImageView(frame: rect)
+                        self.addSubview(iv)
+                        iv.animate(withGIFNamed: "bananadance")
                     }
                 }
-            
-            
-
         })
         self.selectedRange = NSRange(location: 0, length: 0)
     }

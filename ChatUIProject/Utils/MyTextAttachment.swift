@@ -12,6 +12,7 @@ import Lottie
 enum AttachType{
     case image
     case lottie
+    case gif
 }
 
 class MyTextAttachment:NSTextAttachment{

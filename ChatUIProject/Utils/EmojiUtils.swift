@@ -57,13 +57,25 @@ class EmojiUtils {
         name.removeLast()
 
         guard let inner = self.emojiDictionary[name] else {
-            let attachment = NSTextAttachment()
+      /*      let attachment = NSTextAttachment()
         
             attachment.image = UIImage(named: "swit")
             attachment.bounds = CGRect(x: 0, y: 0, width: size, height: size)
 
             let emoji = NSMutableAttributedString()
             emoji.append(NSAttributedString(attachment: attachment))
+            return emoji
+       */
+            
+            let myTextAttachment = MyTextAttachment()
+
+            myTextAttachment.attachType = .lottie
+            myTextAttachment.lottieName = name
+            myTextAttachment.image = UIImage()
+            myTextAttachment.bounds = CGRect(x: 0, y: 0, width: size, height: size)
+            
+            let emoji = NSMutableAttributedString()
+            emoji.append(NSAttributedString(attachment: myTextAttachment))
             return emoji
         }
         return NSAttributedString(string: inner["name"] ?? "").fontSize(16)

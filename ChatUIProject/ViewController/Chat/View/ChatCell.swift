@@ -5,6 +5,7 @@ import SnapKit
 import TTTAttributedLabel
 import Nantes
 import RichString
+import Lottie
 
 
 class ChatCell: UITableViewCell {
@@ -272,7 +273,8 @@ class ChatCell: UITableViewCell {
                         .marginTop(8)
                         .marginRight(8)
                         .justifyContent(.center)
-                    textView.setLottieEmoji()
+                    
+                    textView.setAnimationEmoji()
                     //textView.layoutIfNeeded()
                     //textView.convertGif()
                   //  textView.configureEmojis(EmojiUtils.exampleEmojis,rendering: .highestQuality)
@@ -387,6 +389,7 @@ class ChatCell: UITableViewCell {
         timeLabel.flex.markDirty()
         
         chatLabel.attributedText = viewModel.text
+        chatLabel.setAnimationEmoji()
         chatLabel.flex.markDirty()
         
         chatLabel.isEditable = false
@@ -401,8 +404,7 @@ class ChatCell: UITableViewCell {
             profileImage.flex.height(48)
         }
         
-        chatLabel.setLottieEmoji()
-      //  chatLabel.configureEmojis(EmojiUtils.exampleEmojis)
+        
     }
     
     override func layoutSubviews() {
@@ -412,6 +414,24 @@ class ChatCell: UITableViewCell {
     
     fileprivate func layout() {
         contentView.flex.layout(mode: .adjustHeight)
+        
+        reactionContainer.subviews.forEach {
+            if $0 is UITextView{
+                let textView = $0 as? UITextView
+                $0.subviews.forEach{
+                    if $0 is AnimationView{
+                        $0.removeFromSuperview()
+                    }
+                }
+                textView!.setAnimationEmoji()
+            }
+        }
+        chatLabel.subviews.forEach{
+            if $0 is AnimationView{
+                $0.removeFromSuperview()
+            }
+        }
+        chatLabel.setAnimationEmoji()
     }
     
     override func sizeThatFits(_ size: CGSize) -> CGSize {
