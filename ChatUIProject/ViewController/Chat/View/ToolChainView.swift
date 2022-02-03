@@ -152,7 +152,7 @@ class ToolChainView:UIView{
     }
     
     fileprivate func setColor(){
-        backgroundColor = .backgroundColor
+        backgroundColor = .chatBackgroundColor
         addButton.tintColor = .toolChainTintColor
         alphaButton.tintColor = .toolChainTintColor
         textButton.tintColor = .toolChainTintColor

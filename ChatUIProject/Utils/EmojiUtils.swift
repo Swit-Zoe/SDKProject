@@ -39,15 +39,12 @@ class EmojiUtils {
         
         emojiDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String:[String:String]]
     }
-    func getEmoji(name:String,size:Int) -> NSAttributedString{
+    func getEmoji(name:String,size:CGFloat) -> NSAttributedString{
         var name = name
         if name == ":swit:"{
-            let myTextAttachment = MyTextAttachment()
-
-            myTextAttachment.attachType = .lottie
-            myTextAttachment.lottieName = name
-            myTextAttachment.image = UIImage()
-            myTextAttachment.bounds = CGRect(x: 0, y: 0, width: size, height: size)
+            let myTextAttachment = MyTextAttachment(attachType: .gif,
+                                                    imageName: name,
+                                                    size: size)
             
             let emoji = NSMutableAttributedString()
             emoji.append(NSAttributedString(attachment: myTextAttachment))
@@ -67,12 +64,9 @@ class EmojiUtils {
             return emoji
        */
             
-            let myTextAttachment = MyTextAttachment()
-
-            myTextAttachment.attachType = .lottie
-            myTextAttachment.lottieName = name
-            myTextAttachment.image = UIImage()
-            myTextAttachment.bounds = CGRect(x: 0, y: 0, width: size, height: size)
+            let myTextAttachment = MyTextAttachment(attachType: .lottie,
+                                                    imageName: name,
+                                                    size: size)
             
             let emoji = NSMutableAttributedString()
             emoji.append(NSAttributedString(attachment: myTextAttachment))

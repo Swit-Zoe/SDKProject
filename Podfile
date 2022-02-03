@@ -26,6 +26,8 @@ target 'ChatUIProject' do
   pod 'Streamoji'
   pod 'Gifu'
   pod 'lottie-ios'
+  pod 'Typist'
+  pod 'Kingfisher'
   target 'ChatUIProjectTests' do
     inherit! :search_paths
     # Pods for testing

@@ -15,6 +15,13 @@ public extension DateFormatter {
         return df
     }()
     
+    static let createdFullDateFormat : DateFormatter = {
+       let df = DateFormatter()
+        df.locale = Locale(identifier: Locale.preferredLanguages[0])
+        df.dateFormat = "yyyyMMdd a h:mm"
+        return df
+    }()
+    
     static let dayDateFormat : DateFormatter = {
        let df = DateFormatter()
         df.locale = Locale(identifier: Locale.preferredLanguages[0])

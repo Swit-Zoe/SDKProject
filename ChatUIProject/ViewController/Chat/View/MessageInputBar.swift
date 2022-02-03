@@ -31,7 +31,6 @@ final class MessageInputBar:UIView,UITextViewDelegate{
         
         textView.layer.borderWidth = 0.5
         textView.layer.borderColor = UIColor.lightGray.cgColor
-        textView.backgroundColor = .white
         
         textView.addPadding(leading:16,trailing:70,top:16,bottom:16)
         textView.dataDetectorTypes = .all
@@ -97,7 +96,7 @@ final class MessageInputBar:UIView,UITextViewDelegate{
     
     fileprivate func setColor(){
         textView.textColor = UIColor.labelColor
-        textView.backgroundColor = UIColor.backgroundColor
+        textView.backgroundColor = .chatBackgroundColor
         textView.layer.borderColor = UIColor.systemGray3.cgColor
     }
     

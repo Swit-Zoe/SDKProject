@@ -83,7 +83,7 @@ extension UIColor {
             if traitCollection.userInterfaceStyle == .light {
                 return UIColor(rgb: 0xF8F8F8)
             } else {
-                return UIColor(rgb: 0x000000)
+                return UIColor(rgb: 0x111111)
             }
         }
     }

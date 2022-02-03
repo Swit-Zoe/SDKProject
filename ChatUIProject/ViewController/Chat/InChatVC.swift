@@ -20,6 +20,7 @@ import RichString
 //import LinkPresentation
 import Differ
 import DifferenceKit
+import Typist
 
 protocol InChatVCDelegate{
     func backTapped()
@@ -64,16 +65,22 @@ class InChatVC: UIViewController,Stepper {
         
         subscribeViewModel()
         
-        //navigationItem.backBarButtonItem = UIBarButtonItem(image: UIImage(systemName:"chevron.backward"), style: .done, target: self, action: nil)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: UIImage(systemName:"chevron.backward"), style: .done, target: self, action: #selector(finish))
+        let backItem = UIBarButtonItem(image: UIImage(systemName:"chevron.backward"),
+                                        style: .done,
+                                        target: self,
+                                       action: #selector(finish))
+        backItem.tintColor = .label
+        navigationItem.leftBarButtonItem = backItem
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.isNavigationBarHidden = false
-        self.tabBarController?.tabBar.isHidden = true
+     //   self.tabBarController?.tabBar.isHidden = true
         print("viewModelCount: \(viewModel.count)")
 
+        view.backgroundColor = .chatBackgroundColor
+        tableView.backgroundColor = .chatBackgroundColor
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -90,31 +97,44 @@ class InChatVC: UIViewController,Stepper {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissKeyboard (_:)))
         tapGesture.cancelsTouchesInView = false
         self.tableView.addGestureRecognizer(tapGesture)
-        
-        RxKeyboard.instance.visibleHeight
-                    .drive(onNext: { [weak self] keyboardVisibleHeight in
-                        print(keyboardVisibleHeight)
-                        guard let `self` = self else { return }
-                        self.toolChainView.snp.updateConstraints {
-                            if self.keyboardH > keyboardVisibleHeight{
-                                $0.height.equalTo(0)
-                                $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-keyboardVisibleHeight)
-                                self.tableView.contentOffset.y -= self.keyboardH
-                                
-                            }else{
-                                $0.height.equalTo(64)
-                                $0.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-keyboardVisibleHeight + self.view.safeAreaInsets.bottom)
-                                self.tableView.contentOffset.y += keyboardVisibleHeight
-                            }
-                        }
-                        
-                        self.keyboardH = keyboardVisibleHeight
-                        self.view.setNeedsLayout()
-                        self.view.layoutIfNeeded()
-                    })
-                    .disposed(by: self.disposeBag)
 
-        //TODO: 키보드 높이가 변경될때마다 onNext 가 계속 호출되어야 하지만 키보드가 완전히 나타나거나 완전히 사라질때에만 호출됨
+        Typist.shared
+            .toolbar(scrollView: tableView)
+            .on(event: .willChangeFrame) { [unowned self] options in
+                let height = options.endFrame.height
+                if self.toolChainView.frame.height != 0 {
+                    UIView.animate(withDuration: 0.5) {
+                        self.toolChainView.snp.updateConstraints {c in
+                            c.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                                .offset(-height + self.view.safeAreaInsets.bottom)
+                        }
+                    }
+                }
+            }.on(event: .willHide) { [unowned self] options in
+                UIView.animate(withDuration: options.animationDuration,
+                               delay: 0,
+                               options: UIView.AnimationOptions(curve: options.animationCurve)) {
+                    self.toolChainView.snp.updateConstraints {c in
+                    c.height.equalTo(0)
+                        c.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                    }
+                }
+                
+            }.on(event: .willShow) { [unowned self] options in
+                let height = options.endFrame.height
+                self.toolChainView.snp.updateConstraints {c in
+                    UIView.animate(withDuration: options.animationDuration,
+                                   delay: 0,
+                                   options: UIView.AnimationOptions(curve: options.animationCurve)) {
+                        c.height.equalTo(64)
+                        c.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+                            .offset(-height + self.view.safeAreaInsets.bottom)
+                    }
+                    self.tableView.contentOffset.y += height
+                }
+            }.start()
+        
+        //TODO: 키보드 높이가 변경될때마다 onNext 가 계속 호출되어야 하지만 키보드가 완전히 나타나거나 완전히 사라질때에만 호출됨 -> 해결
     }
     
     private func subscribeViewModel(){
@@ -201,6 +221,8 @@ class InChatVC: UIViewController,Stepper {
         }
         
         tableView.register(ChatCell.classForCoder(), forCellReuseIdentifier: ChatCell.reuseIdentifier)
+        tableView.register(NotiCell.classForCoder(), forCellReuseIdentifier: NotiCell.reuseIdentifier)
+        tableView.register(DayCell.classForCoder(), forCellReuseIdentifier: DayCell.reuseIdentifier)
         
         tableView.rowHeight = UITableView.automaticDimension // dynamic cell height 적용
         tableView.separatorColor = .clear
@@ -446,24 +468,29 @@ class InChatVC: UIViewController,Stepper {
 
 // MARK: TableView Extension
 extension InChatVC:UITableViewDelegate,UITableViewDataSource{
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ChatCell.reuseIdentifier, for: indexPath) as! ChatCell
+    func setCell<T:InChatCell>(type: T.Type,indexPath:IndexPath) -> T {
+        let cell = tableView.dequeueReusableCell(withIdentifier: T.reuseIdentifier, for: indexPath) as! T
         
-        //cell.prepareForReuse()
         let idx = indexPath.row
-        // let pc = idx > 0 ? viewModel[idx - 1]:nil
+        
         if idx < viewModel.count {
             cell.configure(viewModel: viewModel[idx])
         }
-        
-        
-        //        cell.chatLabel.detectLink{
-        //            cell.linkPreviewContainer.flex.addItem($0)
-        //            cell.linkPreviewContainer.flex.markDirty()
-        //           // self.tableView.reloadData()
-        //            print("asdf")
-        //        }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let idx = indexPath.row
+        
+        let vm = viewModel[idx]
+        
+        if vm.chatType == "day"{
+            return setCell(type: DayCell.self, indexPath: indexPath)
+        }else if vm.notiJSON != nil{
+            return setCell(type: NotiCell.self, indexPath: indexPath)
+        }else{
+            return setCell(type: ChatCell.self, indexPath: indexPath)
+        }
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

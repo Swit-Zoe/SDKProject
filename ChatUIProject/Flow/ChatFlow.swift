@@ -22,6 +22,7 @@ class ChatFlow: Flow {
 
     init(chatListVC:ChatListVC) {
         rootViewController = chatListVC
+        self.rootViewController.navigationBar.backgroundColor = .chatBackgroundColor
        // rootViewController = uiNavigationViewController
     }
 

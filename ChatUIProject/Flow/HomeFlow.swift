@@ -40,7 +40,8 @@ class HomeFlow: Flow {
     
     private func navigateToHome() -> FlowContributors {
         print(#function)
-        let viewController = PageVC(transitionStyle: .scroll, navigationOrientation: .horizontal, options: [:])
+    //    let viewController = PageVC(transitionStyle: .scroll, navigationOrientation: .horizontal, options: [:])
+        let viewController = PageVC()
         
         self.rootViewController.pushViewController(viewController, animated: true)
         

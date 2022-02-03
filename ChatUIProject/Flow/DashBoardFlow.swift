@@ -16,7 +16,10 @@ class DashBoardFlow: Flow {
 
     private lazy var rootViewController = UITabBarController()
 
-    init() {}
+    init() {
+        self.rootViewController.tabBar.tintColor = .labelColor
+        self.rootViewController.tabBar.backgroundColor = .chatBackgroundColor
+    }
 
     func navigate(to step: Step) -> FlowContributors {
         guard let step = step as? FlowStep else { return .none }
@@ -52,7 +55,7 @@ class DashBoardFlow: Flow {
                   tempFlow2,
                   tempFlow3,
                   tempFlow4,
-                  when: .created) { [unowned self] (root1: UINavigationController,
+                  when: .ready) { [unowned self] (root1: UINavigationController,
                                                     root2: UINavigationController,
                                                     root3: UINavigationController,
                                                     root4: UINavigationController,
@@ -73,7 +76,7 @@ class DashBoardFlow: Flow {
             root4.title = "Search"
             root5.tabBarItem = tabBarItem5
             root5.title = "Profile"
-
+    
             self.rootViewController.setViewControllers([root1, root2, root3,root4,root5], animated: false)
         }
         

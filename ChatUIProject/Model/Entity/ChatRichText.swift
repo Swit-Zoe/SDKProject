@@ -32,6 +32,7 @@ struct TextElements : Codable{
         case userID = "user_id"
         case content, name, url, styles
         case indent
+        case elements
     }
 }
 
@@ -47,6 +48,7 @@ enum RichType: String, Codable {
     case mention = "rt_mention"
     case link = "rt_link"
     case emoji = "rt_emoji"
+    case section = "rt_section"
 }
 
 extension TextElements{
@@ -103,8 +105,17 @@ extension TextElements{
                 .underline(color: UIColor.linkColor)
                 .fontSize(16)
                 .backgroundColor(.systemGray5)
-            
-        case .none:
+        case .section:
+            var viewString = NSAttributedString(string: "")
+            guard let elements = self.elements else {return NSAttributedString(string:"")}
+            elements.forEach{
+                viewString = viewString + $0.applyStyle()
+            }
+            viewString = NSAttributedString(string: "● ")
+                .font(.regular)
+                .color(.label) + viewString + NSAttributedString(string: "\n")
+            return viewString
+        default:
             return .empty
         }
     }

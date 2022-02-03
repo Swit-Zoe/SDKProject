@@ -9,6 +9,7 @@ PODS:
     - DifferenceKit/Core
   - FlexLayout (1.3.23)
   - Gifu (3.3.1)
+  - Kingfisher (7.1.2)
   - lottie-ios (3.3.0)
   - Nantes (0.1.2)
   - Nuke (8.4.1)
@@ -42,6 +43,7 @@ PODS:
   - SwiftyImage (1.6.0)
   - Then (2.7.0)
   - TTTAttributedLabel (2.0.0)
+  - Typist (1.4.2)
 
 DEPENDENCIES:
   - Alamofire
@@ -49,6 +51,7 @@ DEPENDENCIES:
   - DifferenceKit
   - FlexLayout
   - Gifu
+  - Kingfisher
   - lottie-ios
   - Nantes
   - PinLayout
@@ -64,6 +67,7 @@ DEPENDENCIES:
   - SwiftyImage
   - Then
   - TTTAttributedLabel
+  - Typist
 
 SPEC REPOS:
   trunk:
@@ -72,6 +76,7 @@ SPEC REPOS:
     - DifferenceKit
     - FlexLayout
     - Gifu
+    - Kingfisher
     - lottie-ios
     - Nantes
     - Nuke
@@ -91,6 +96,7 @@ SPEC REPOS:
     - SwiftyImage
     - Then
     - TTTAttributedLabel
+    - Typist
 
 SPEC CHECKSUMS:
   Alamofire: 1c4fb5369c3fe93d2857c780d8bbe09f06f97e7c
@@ -98,6 +104,7 @@ SPEC CHECKSUMS:
   DifferenceKit: 5659c430bb7fe45876fa32ce5cba5d6167f0c805
   FlexLayout: 5b44c0538e7eaa2110e3160dfdfb74611676fb91
   Gifu: 416d4e38c4c2fed012f019e0a1d3ffcb58e5b842
+  Kingfisher: 44ed6a8504763f27bab46163adfac83f5deb240c
   lottie-ios: 6ac74dcc09904798f59b18cb3075c089d76be9ae
   Nantes: 0396442578e32242223fed46050dea1850236184
   Nuke: d780e3507a86b86c589ab3cc5cd302d5456f06fb
@@ -117,7 +124,8 @@ SPEC CHECKSUMS:
   SwiftyImage: 65c71a147f417fc0fe137d17b135aaa666279a09
   Then: acfe0be7e98221c6204e12f8161459606d5d822d
   TTTAttributedLabel: 8cffe8e127e4e82ff3af1e5386d4cd0ad000b656
+  Typist: 06465ab9867782aa6c81e38f073dfc01dab73deb
 
-PODFILE CHECKSUM: ad02cac0836c360ff06c4ff4a3605f798ac6c57d
+PODFILE CHECKSUM: 5ebad07251c548a2e9a3297c4d76da41ac5b2522
 
 COCOAPODS: 1.11.2

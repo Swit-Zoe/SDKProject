@@ -41,9 +41,10 @@ struct ViewModel:Differentiable,Hashable{
     var isSocket : Bool?
     var isOutcome: Bool?
     var wsID: String?
+    var messageData:[MessageDatum]?
     
     init(chat:Chat){
-        self.text = convertRichText(chat: chat)
+        self.text = RichTextConverter.shared.convertRichText(chat: chat)
         self.created = chat.created.getCreatedTimeString()
         self.modified = chat.modified.getCreatedTimeString()
         self.userName = chat.userName
@@ -52,6 +53,11 @@ struct ViewModel:Differentiable,Hashable{
         self.chatType = chat.chatType.rawValue
         self.reactions = chat.reactions
         self.msgCmtCnt = chat.msgCmtCnt
+        
+        self.ogData = chat.ogData
+        self.isOutcome = chat.isOutcome
+        self.messageData = chat.messageData
+        self.assetData = chat.assetData
     }
     
     var differenceIdentifier: Self {
@@ -69,27 +75,6 @@ struct ViewModel:Differentiable,Hashable{
 //        hasher.combine(x)
 //        hasher.combine(y)
     }
-    
-    func convertRichText(chat:Chat)->NSAttributedString{
-        let data = Data(chat.bodyBlockskit.utf8)
-        let decoder = JSONDecoder()
-        
-        let dummy = chat.bodyText.fontSize(16).color(.label)
-        
-        guard let result = try? decoder.decode(BodyBlocksKit.self, from: data) else {return dummy}
-        guard let elements = result.elements else {return dummy}
-        guard let element = elements.first else {return dummy}
-        
-        var viewString = NSAttributedString(string: "")
-        
-        element.elements!.forEach{
-            viewString = viewString + $0.applyStyle()
-        }
-        
-        return viewString
-    }
-
-    
 }
 
 
